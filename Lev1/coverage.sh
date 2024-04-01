@@ -8,10 +8,13 @@ mkdir -p cov/queue
 # need human's touch...
 
 # Process queue
+rm *.gcda -f
 for file in outputs/default/queue/*; do
     if [ -f "$file" ]; then
-        ./btree < "$file"
+        ./btree.out < "$file"
     fi
 done
 
 gcov btree.gcda
+mv *.gcda cov/queue
+mv *.gcov cov/queue
