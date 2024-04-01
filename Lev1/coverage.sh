@@ -11,7 +11,7 @@ mkdir -p cov/queue
 for file in outputs/default/queue/*; do
     if [ -f "$file" ]; then
         ./btree < "$file"
-        gcov -bcif *.gcda
-        mv *.gcov "cov/queue/$(basename "$file").gcov"
     fi
 done
+
+gcov btree.gcda
