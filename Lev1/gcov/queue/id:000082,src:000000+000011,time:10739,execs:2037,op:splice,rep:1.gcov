@@ -1,0 +1,363 @@
+        -:    0:Source:btree.c
+        -:    0:Graph:btree.gcno
+        -:    0:Data:btree.gcda
+        -:    0:Runs:1
+        -:    0:Programs:1
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <assert.h>
+        -:    4:
+        -:    5:#define MAX 4
+        -:    6:#define MIN 2
+        -:    7:
+        -:    8:#define NUM_TEST_INPUT 100
+        -:    9:
+        -:   10:struct btreeNode {
+        -:   11:	int val[MAX + 1], count;
+        -:   12:	struct btreeNode *link[MAX + 1];
+        -:   13:};
+        -:   14:
+        -:   15:struct btreeNode *root;
+        -:   16:
+        -:   17:/* creating new node */
+        3:   18:struct btreeNode * createNode(int val, struct btreeNode *child) {
+        -:   19:	struct btreeNode *newNode;
+        3:   20:	newNode = (struct btreeNode *)malloc(sizeof(struct btreeNode));
+        3:   21:	newNode->val[1] = val;
+        3:   22:	newNode->count = 1;
+        3:   23:	newNode->link[0] = root;
+        3:   24:	newNode->link[1] = child;
+        3:   25:	return newNode;
+        -:   26:}
+        -:   27:
+        -:   28:/* Places the value in appropriate position */
+       30:   29:void addValToNode(int val, int pos, struct btreeNode *node,
+        -:   30:		struct btreeNode *child) {
+       30:   31:	int j = node->count;
+       94:   32:	while (j > pos) {
+       34:   33:		node->val[j + 1] = node->val[j];
+       34:   34:		node->link[j + 1] = node->link[j];
+       34:   35:		j--;
+        -:   36:	}
+       30:   37:	node->val[j + 1] = val;
+       30:   38:	node->link[j + 1] = child;
+       30:   39:	node->count++;
+       30:   40:}
+        -:   41:
+        -:   42:/* split the node */
+        8:   43:void splitNode (int val, int *pval, int pos, struct btreeNode *node,
+        -:   44:		struct btreeNode *child, struct btreeNode **newNode) {
+        -:   45:	int median, j;
+        -:   46:
+        8:   47:	if (pos > MIN)
+        4:   48:		median = MIN + 1;
+        -:   49:	else
+        4:   50:		median = MIN;
+        -:   51:
+        8:   52:	*newNode = (struct btreeNode *)malloc(sizeof(struct btreeNode));
+        8:   53:	j = median + 1;
+       28:   54:	while (j <= MAX) {
+       12:   55:		(*newNode)->val[j - median] = node->val[j];
+       12:   56:		(*newNode)->link[j - median] = node->link[j];
+       12:   57:		j++;
+        -:   58:	}
+        8:   59:	node->count = median;
+        8:   60:	(*newNode)->count = MAX - median;
+        -:   61:
+        8:   62:	if (pos <= MIN) {
+        4:   63:		addValToNode(val, pos, node, child);
+        -:   64:	} else {
+        4:   65:		addValToNode(val, pos - median, *newNode, child);
+        -:   66:	}
+        8:   67:	*pval = node->val[node->count];
+        8:   68:	(*newNode)->link[0] = node->link[node->count];
+        8:   69:	node->count--;
+        8:   70:}
+        -:   71:
+        -:   72:/* sets the value val in the node */
+      115:   73:int setValueInNode(int val, int *pval,
+        -:   74:		struct btreeNode *node, struct btreeNode **child) {
+        -:   75:
+        -:   76:	int pos;
+      115:   77:	if (!node) {
+       25:   78:		*pval = val;
+       25:   79:		*child = NULL;
+       25:   80:		return 1;
+        -:   81:	}
+        -:   82:	
+        -:   83:	// if (node->link[pos] == NULL) {
+        -:   84:	// 	exit(1);
+        -:   85:	// }
+        -:   86:	
+        -:   87:
+       90:   88:	if (val < node->val[1]) {
+       36:   89:		pos = 0;
+        -:   90:	} else {
+      146:   91:		for (pos = node->count;
+       76:   92:				(val < node->val[pos] && pos > 1); pos--);
+       54:   93:		if (val == node->val[pos]) {
+       18:   94:			printf("Duplicates not allowed\n");
+       18:   95:			return 0;
+        -:   96:		}
+        -:   97:	}
+       72:   98:	if (setValueInNode(val, pval, node->link[pos], child)) {
+       30:   99:		if (node->count < MAX) {
+       22:  100:			addValToNode(*pval, pos, node, *child);
+        -:  101:		} else {
+        8:  102:			splitNode(*pval, pval, pos, node, *child, child);
+        8:  103:			return 1;
+        -:  104:		}
+        -:  105:	}
+       64:  106:	return 0;
+        -:  107:}
+        -:  108:
+        -:  109:/* insert val in B-Tree */
+       43:  110:void insertion(int val) {
+       43:  111:	int flag, i;
+       43:  112:	struct btreeNode *child;
+        -:  113:
+       43:  114:	flag = setValueInNode(val, &i, root, &child);
+       43:  115:	if (flag)
+        3:  116:		root = createNode(i, child);
+       43:  117:}
+        -:  118:
+        -:  119:/* copy successor for the value to be deleted */
+        1:  120:void copySuccessor(struct btreeNode *myNode, int pos) {
+        -:  121:	struct btreeNode *dummy;
+        1:  122:	dummy = myNode->link[pos];
+        -:  123:
+        2:  124:	for (;dummy->link[0] != NULL;)
+    #####:  125:		dummy = dummy->link[0];
+        1:  126:	myNode->val[pos] = dummy->val[1];
+        -:  127:
+        1:  128:}
+        -:  129:
+        -:  130:/* removes the value from the given node and rearrange values */
+        2:  131:void removeVal(struct btreeNode *myNode, int pos) {
+        2:  132:	int i = pos + 1;
+        5:  133:	while (i <= myNode->count) {
+        1:  134:		myNode->val[i - 1] = myNode->val[i];
+        1:  135:		myNode->link[i - 1] = myNode->link[i];
+        1:  136:		i++;
+        -:  137:	}
+        2:  138:	myNode->count--;
+        2:  139:}
+        -:  140:
+        -:  141:/* shifts value from parent to right child */
+    #####:  142:void doRightShift(struct btreeNode *myNode, int pos) {
+    #####:  143:	struct btreeNode *x = myNode->link[pos];
+    #####:  144:	int j = x->count;
+        -:  145:
+    #####:  146:	while (j > 0) {
+    #####:  147:		x->val[j + 1] = x->val[j];
+    #####:  148:		x->link[j + 1] = x->link[j];
+        -:  149:	}
+    #####:  150:	x->val[1] = myNode->val[pos];
+    #####:  151:	x->link[1] = x->link[0];
+    #####:  152:	x->count++;
+        -:  153:
+    #####:  154:	x = myNode->link[pos - 1];
+    #####:  155:	myNode->val[pos] = x->val[x->count];
+    #####:  156:	myNode->link[pos] = x->link[x->count];
+    #####:  157:	x->count--;
+    #####:  158:	return;
+        -:  159:}
+        -:  160:
+        -:  161:/* shifts value from parent to left child */
+        2:  162:void doLeftShift(struct btreeNode *myNode, int pos) {
+        2:  163:	int j = 1;
+        2:  164:	struct btreeNode *x = myNode->link[pos - 1];
+        -:  165:
+        2:  166:	x->count++;
+        2:  167:	x->val[x->count] = myNode->val[pos];
+        2:  168:	x->link[x->count] = myNode->link[pos]->link[0];
+        -:  169:
+        2:  170:	x = myNode->link[pos];
+        2:  171:	myNode->val[pos] = x->val[1];
+        2:  172:	x->link[0] = x->link[1];
+        2:  173:	x->count--;
+        -:  174:
+        8:  175:	while (j <= x->count) {
+        4:  176:		x->val[j] = x->val[j + 1];
+        4:  177:		x->link[j] = x->link[j + 1];
+        4:  178:		j++;
+        -:  179:	}
+        2:  180:	return;
+        -:  181:}
+        -:  182:
+        -:  183:/* merge nodes */
+        1:  184:void mergeNodes(struct btreeNode *myNode, int pos) {
+        1:  185:	int j = 1;
+        1:  186:	struct btreeNode *x1 = myNode->link[pos], *x2 = myNode->link[pos - 1];
+        -:  187:
+        1:  188:	x2->count++;
+        1:  189:	x2->val[x2->count] = myNode->val[pos];
+        1:  190:	x2->link[x2->count] = myNode->link[0];
+        -:  191:
+        3:  192:	while (j <= x1->count) {
+        1:  193:		x2->count++;
+        1:  194:		x2->val[x2->count] = x1->val[j];
+        1:  195:		x2->link[x2->count] = x1->link[j];
+        1:  196:		j++;
+        -:  197:	}
+        -:  198:
+        1:  199:	j = pos;
+        2:  200:	while (j < myNode->count) {
+    #####:  201:		myNode->val[j] = myNode->val[j + 1];
+    #####:  202:		myNode->link[j] = myNode->link[j + 1];
+    #####:  203:		j++;
+        -:  204:	}
+        1:  205:	myNode->count--;
+        1:  206:	free(x1);
+        1:  207:}
+        -:  208:
+        -:  209:/* adjusts the given node */
+        3:  210:void adjustNode(struct btreeNode *myNode, int pos) {
+        3:  211:	if (!pos) {
+        1:  212:		if (myNode->link[1]->count > MIN) {
+        1:  213:			doLeftShift(myNode, 1);
+        -:  214:		} else {
+    #####:  215:			mergeNodes(myNode, 1);
+        -:  216:		}
+        -:  217:	} else {
+        2:  218:		if (myNode->count != pos) {
+        1:  219:			if(myNode->link[pos - 1]->count > MIN) {
+    #####:  220:				doRightShift(myNode, pos);
+        -:  221:			} else {
+        1:  222:				if (myNode->link[pos + 1]->count > MIN) {
+        1:  223:					doLeftShift(myNode, pos + 1);
+        -:  224:				} else {
+    #####:  225:					mergeNodes(myNode, pos);
+        -:  226:				}
+        -:  227:			}
+        -:  228:		} else {
+        1:  229:			if (myNode->link[pos - 1]->count > MIN)
+    #####:  230:				doRightShift(myNode, pos);
+        -:  231:			else
+        1:  232:				mergeNodes(myNode, pos);
+        -:  233:		}
+        -:  234:	}
+        3:  235:}
+        -:  236:
+        -:  237:/* delete val from the node */
+       88:  238:int delValFromNode(int val, struct btreeNode *myNode) {
+       88:  239:	int pos, flag = 0;
+       88:  240:	if (myNode) {
+       63:  241:		if (val < myNode->val[1]) {
+       18:  242:			pos = 0;
+       18:  243:			flag = 0;
+        -:  244:		} else {
+      121:  245:			for (pos = myNode->count;
+       62:  246:					(val < myNode->val[pos] && pos > 1); pos--);
+       45:  247:			if (val == myNode->val[pos]) {
+        3:  248:				flag = 1;
+        -:  249:			} else {
+       42:  250:				flag = 0;
+        -:  251:			}
+        -:  252:		}
+       63:  253:		if (flag) {
+        3:  254:			if (myNode->link[pos - 1]) {
+        1:  255:				copySuccessor(myNode, pos);
+        1:  256:				flag = delValFromNode(myNode->val[pos], myNode->link[pos]);
+        1:  257:				if (flag == 0) {
+    #####:  258:					printf("Given data is not present in B-Tree\n");
+        -:  259:				}
+        -:  260:			} else {
+        2:  261:				removeVal(myNode, pos);
+        -:  262:			}
+        -:  263:		} else {
+       60:  264:			flag = delValFromNode(val, myNode->link[pos]);
+        -:  265:		}
+       63:  266:		if (myNode->link[pos]) {
+       36:  267:			if (myNode->link[pos]->count < MIN)
+        3:  268:				adjustNode(myNode, pos);
+        -:  269:		}
+        -:  270:	}
+       88:  271:	return flag;
+        -:  272:}
+        -:  273:
+        -:  274:/* delete val from B-tree */
+       27:  275:void deletion(int val, struct btreeNode *myNode) {
+        -:  276:	struct btreeNode *tmp;
+       27:  277:	if (!delValFromNode(val, myNode)) {
+       25:  278:		printf("Given value is not present in B-Tree\n");
+       25:  279:		return;
+        -:  280:	} else {
+        2:  281:		if (myNode->count == 0) {
+    #####:  282:			tmp = myNode;
+    #####:  283:			myNode = myNode->link[0];
+    #####:  284:			free(tmp);
+        -:  285:		}
+        -:  286:	}
+        2:  287:	root = myNode;
+        2:  288:	return;
+        -:  289:}
+        -:  290:
+        -:  291:/* search val in B-Tree */
+       89:  292:void searching(int val, int *pos, struct btreeNode *myNode) {
+       89:  293:	if (!myNode) {
+       26:  294:		return;
+        -:  295:	}
+        -:  296:
+       63:  297:	if (val < myNode->val[1]) {
+       15:  298:		*pos = 0;
+        -:  299:	} else {
+      129:  300:		for (*pos = myNode->count;
+       66:  301:				(val < myNode->val[*pos] && *pos > 1); (*pos)--);
+       48:  302:		if (val == myNode->val[*pos]) {
+        2:  303:			printf("Given data %d is present in B-Tree", val);
+        2:  304:			return;
+        -:  305:		}
+        -:  306:	}
+       61:  307:	searching(val, pos, myNode->link[*pos]);
+       61:  308:	return;
+        -:  309:}
+        -:  310:
+        -:  311:/* B-Tree Traversal */
+    #####:  312:void traversal(struct btreeNode *myNode) {
+        -:  313:	int i;
+    #####:  314:	if (myNode) {
+    #####:  315:		for (i = 0; i < myNode->count; i++) {
+    #####:  316:			traversal(myNode->link[i]);
+    #####:  317:			printf("%d ", myNode->val[i + 1]);
+        -:  318:		}
+    #####:  319:		traversal(myNode->link[i]);
+        -:  320:	}
+    #####:  321:}
+        -:  322:
+        1:  323:int main() {
+        1:  324:	int val, ch;
+        1:  325:	int cnt = NUM_TEST_INPUT;
+      102:  326:	while (cnt--) {
+      100:  327:		printf("1. Insertion\t2. Deletion\n");
+      100:  328:		printf("3. Searching\t4. Traversal\n");
+      100:  329:		printf("5. Exit\nEnter your choice:");
+      100:  330:		scanf("%d", &ch);
+      100:  331:		switch (ch) {
+       43:  332:			case 1:
+       43:  333:				printf("Enter your input:");
+       43:  334:				scanf("%d", &val);
+       43:  335:				insertion(val);
+       43:  336:				break;
+       27:  337:			case 2:
+       27:  338:				printf("Enter the element to delete:");
+       27:  339:				scanf("%d", &val);
+       27:  340:				deletion(val, root);
+       27:  341:				break;
+       28:  342:			case 3:
+       28:  343:				printf("Enter the element to search:");
+       28:  344:				scanf("%d", &val);
+       28:  345:				searching(val, &ch, root);
+       28:  346:				break;
+    #####:  347:			case 4:
+    #####:  348:				traversal(root);
+    #####:  349:				break;
+    #####:  350:			case 5:
+    #####:  351:				exit(0);
+        2:  352:			default:
+        2:  353:				printf("U have entered wrong option!!\n");
+        2:  354:				break;
+        -:  355:		}
+      100:  356:		printf("\n");
+        -:  357:	}
+        -:  358:}
