@@ -7,5 +7,30 @@
 <br>
 <br>
 
-The software is a Fully Automated Debugging Chain using open source fuzzing, fault localisation and automated program repair technologies. 
+This software is a Fully Automated Debugging Chain using open source fuzzing, fault localisation and automated program repair technologies. 
+
+
+<br>
+
+## How to run
+
+`git clone https://github.com/leeejjju/Hong-chain.git`
+
+
+`cd Hong-chain`
+
+
+`git clone https://github.com/AFLplusplus/AFLplusplus.git`
+
+
+`cd AFLplusplus`
+
+
+`make`
+
+
+`cd ..`
+
+
+`TO BE CONTINUE...`
 
