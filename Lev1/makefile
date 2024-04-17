@@ -10,6 +10,10 @@ btree.out: btree.c
 	AFL_USE_ASAN=1 $(CC) $(CFLAGS) $^ -o $@
 
 
+crash_btree: 
+	clang -g -fsanitize=address -fsanitize-coverage=trace-pc-guard -o btree btree.c trace-pc-fo.o
+
+
 # run afl-fuzz
 fuzz:
 	../AFLplusplus/afl-fuzz -i inputs -o outputs ./btree

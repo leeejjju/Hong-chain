@@ -80,16 +80,12 @@ int setValueInNode(int val, int *pval,
 		return 1;
 	}
 	
-	// if (node->link[pos] == NULL) {
-	// 	exit(1);
-	// }
-	
 
 	if (val < node->val[1]) {
 		pos = 0;
 	} else {
 		for (pos = node->count;
-				(val < node->val[pos] && pos > 1); pos--);
+			(val < node->val[pos] && pos > 1); pos--);
 		if (val == node->val[pos]) {
 			printf("Duplicates not allowed\n");
 			return 0;
