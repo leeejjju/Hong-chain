@@ -109,7 +109,7 @@ int get_queue_data(){
 
 // if it was succeed return 0, otherwise 1
 // open file and scanning the line and save the info to temp_crash_arr/crash_arr
-int scanning(char * crash_filename) {
+int crash_scanning(char * crash_filename) {
     FILE * crash_file;
     char * line = NULL;
     char * num_pos;
@@ -174,8 +174,8 @@ int get_crash_data() {
             sprintf(crash_filename, "%s/%s", CCOV_DIR, crash_dirent->d_name);
             // printf("file: %s\n", crash_filename);
 
-            if (scanning(crash_filename) == 1) {
-                fprintf(stderr, "scanning error\n");
+            if (crash_scanning(crash_filename) == 1) {
+                fprintf(stderr, "crash scanning error\n");
                 return 1;
             }
             
