@@ -3,10 +3,9 @@
 #include <string.h>
 #include <fcntl.h>
 #include <dirent.h>
-#include <sys/types.h>
 
 
-int crash_arr[355];
+int crash_arr[359];
 
 
 // if it was succeed return 0, otherwise 1
@@ -20,7 +19,7 @@ int scanning(char * crash_filename) {
 
     // save the info of executed line
     // 0 is not executed, 1 is executed
-    int temp_crash_arr[355] = {0};
+    int temp_crash_arr[359] = {0};
 
     // file open
     crash_file = fopen(crash_filename, "r");
@@ -67,7 +66,7 @@ int main(int argc, char * argv[]) {
         if (crash_dirent->d_type == DT_REG) {
             strcpy(crash_filename, "gcov/crash/");
             strcat(crash_filename, crash_dirent->d_name);
-            // printf("file: %s\n", crash_filename);
+            printf("file: %s\n", crash_filename);
 
             if (scanning(crash_filename) == 1) {
                 fprintf(stderr, "scanning error\n");

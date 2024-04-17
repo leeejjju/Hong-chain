@@ -102,6 +102,7 @@ int main(int argc, char** argv){
 
 	if(get_queue_data()) perror("get_queue_data");
 	
+	
 	//print the queue_arry state
 	for(int i = 0; i < max_linenum; i++) {
 		if(queue_arry[i]) printf("queue arry [%03d] : %d\n", i, queue_arry[i]);

@@ -11,7 +11,7 @@ btree.out: btree.c
 
 
 crash_btree: 
-	clang -g -fsanitize=address -fsanitize-coverage=trace-pc-guard -o btree btree.c trace-pc-fo.o
+	clang -g -fsanitize=address -fsanitize-coverage=trace-pc-guard -o crash_btree.out btree.c trace-pc-fo.o
 
 
 # run afl-fuzz
@@ -21,4 +21,5 @@ fuzz:
 clean:
 	rm -rf *.out 
 	rm -rf *.gcda *.gcov *.gcno
+
 
