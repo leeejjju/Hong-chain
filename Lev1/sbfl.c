@@ -216,13 +216,19 @@ void susp() {
 
     // calculate the susp_score of line i
     for (i = 1; i < max_linenum; i++) {
-        if (crash_arr[i] != 0 && queue_arr[i] != 0) {
-            susp_score = (crash_arr[i] / total_fail) / ((crash_arr[i] / total_fail) + (queue_arr[i] / total_pass));
-        } else if (crash_arr[i] != 0) {
-            susp_score = 1;
-        }
-        else {
-            susp_score = 0;
+        if (queue_arr[i] == 0) {
+            if (crash_arr[i] == 0) {
+                susp_score = 0;
+            } else {
+                susp_score = 1;
+            }
+        } else {
+            if (crash_arr[i] == 0) {
+                susp_score = 0;
+            } else {
+                susp_score = ((float)crash_arr[i] / total_fail) / (((float)crash_arr[i] / total_fail) + ((float)queue_arr[i] / total_pass));
+                // printf("susp_score: %f\n", susp_score);
+            }
         }
         cmp(i, susp_score, line_ranking, score_ranking);
     }
@@ -231,7 +237,7 @@ void susp() {
     printf("line    susp_score\n");
     printf("--------------------\n");
     for (i = 0; i < 10; i++) {
-        printf("%d      %.1f\n", line_ranking[i], score_ranking[i]);
+        printf("%d      %.6f\n", line_ranking[i], score_ranking[i]);
     }
 }
 
