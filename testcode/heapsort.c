@@ -1,7 +1,7 @@
 // Heap Sort in C
 
 #include <stdio.h>
-
+#define BUF_SIZE 128
 // Function to swap the position of two elements
 
 void swap(int* a, int* b)
@@ -85,9 +85,15 @@ void printArray(int arr[], int N)
 // Driver's code
 int main()
 {
-    int arr[] = { 12, 11, 13, 5, 6, 7 };
-    int N = sizeof(arr) / sizeof(arr[0]);
 
+    int N = 0; //size of arry
+    int arr[BUF_SIZE];
+
+	printf("size of arry: ");
+	scanf("%d", &N);
+	printf("type %d arry elements(int): \n", N);
+	for(int i = 0; i < N; i++) scanf("%d", &arr[i]);
+	
     // Function call
     heapSort(arr, N);
     printf("Sorted array is\n");
