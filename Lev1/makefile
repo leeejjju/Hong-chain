@@ -17,6 +17,7 @@ crash_btree.out: btree.c
 	clang -g -fsanitize=address -fsanitize-coverage=trace-pc-guard $^ -o $@ trace-pc-fo.o
 
 # run afl-fuzz
+<<<<<<< HEAD
 fuzz: btree.out
 	 $(FZ) -i inputs -o outputs ./$^
 
@@ -24,6 +25,14 @@ fuzz: btree.out
 FL.out: fault_localization.c
 	gcc $^ -o $@ -DD=0
 	./$@
+=======
+fuzz:
+	../AFLplusplus/afl-fuzz -i inputs -o outputs ./btree.out
+
+# fault localization and find 10 buggy line
+sbfl: 
+	gcc sbfl.c -o sbfl.out -DD=0
+>>>>>>> db
 
 clean:
 	rm -rf *.out 
