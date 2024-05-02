@@ -5,34 +5,23 @@ FZ=../AFLplusplus/afl-fuzz
 CFLAGS=-O0 -g --coverage 
 .PHONY : fuzz clean
 
-#run
-run: btree.out crash_btree.out queue_coverage.out crash_coverage.out
+TARGET = ""
 
-# build btree
-btree.out: btree.c
+# build TARGET
+$(TARGET).out: $(TARGET).c
 	AFL_USE_ASAN=1 $(CC) $(CFLAGS) $^ -o $@
 
 #with trace-pc-guard
-crash_btree.out: btree.c
+crash_$(TARGET).out: $(TARGET).c
 	clang -g -fsanitize=address -fsanitize-coverage=trace-pc-guard $^ -o $@ trace-pc-fo.o
 
 # run afl-fuzz
-<<<<<<< HEAD
-fuzz: btree.out
-	 $(FZ) -i inputs -o outputs ./$^
-
-#get the queue_coverage
-FL.out: fault_localization.c
-	gcc $^ -o $@ -DD=0
-	./$@
-=======
 fuzz:
-	../AFLplusplus/afl-fuzz -i inputs -o outputs ./btree.out
+	../AFLplusplus/afl-fuzz -i inputs -o outputs ./$(TARGET).out
 
 # fault localization and find 10 buggy line
 sbfl: 
 	gcc sbfl.c -o sbfl.out -DD=0
->>>>>>> db
 
 clean:
 	rm -rf *.out 
