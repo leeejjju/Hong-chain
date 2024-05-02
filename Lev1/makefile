@@ -16,7 +16,11 @@ crash_btree:
 
 # run afl-fuzz
 fuzz:
-	../AFLplusplus/afl-fuzz -i inputs -o outputs ./btree
+	../AFLplusplus/afl-fuzz -i inputs -o outputs ./btree.out
+
+# fault localization and find 10 buggy line
+sbfl: 
+	gcc sbfl.c -o sbfl.out -DD=0
 
 clean:
 	rm -rf *.out 

@@ -219,13 +219,16 @@ void susp() {
         if (queue_arr[i] == 0) {
             if (crash_arr[i] == 0) {
                 susp_score = 0;
-            } else {
+            } 
+            else {
                 susp_score = 1;
             }
-        } else {
+        } 
+        else {
             if (crash_arr[i] == 0) {
                 susp_score = 0;
-            } else {
+            } 
+            else {
                 susp_score = ((float)crash_arr[i] / total_fail) / (((float)crash_arr[i] / total_fail) + ((float)queue_arr[i] / total_pass));
                 // printf("susp_score: %f\n", susp_score);
             }
