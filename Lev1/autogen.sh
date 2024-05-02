@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Make btree.out
+make clean
+rm -rf outputs/*
 make btree.out
 
 # Make fuzz and run for 30 seconds
