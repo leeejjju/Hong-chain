@@ -11,12 +11,12 @@
 //It runs for each fuzzing case,,, 
 int main(int argc, char** argv){
 
-	//get inputs from stdin (maybe from fuzzer)
+	//TODO get inputs from stdin (maybe from fuzzer)
 	char buffer[BUF_SIZE];
 	fgets(buffer, BUF_SIZE, stdin);
 
-	//make good input
-	char* inputs = generate_good_input(buffer);
+	//TODO make good input using input generator
+	char* inputs = generatr_input(buffer);
 
 	// ***************** this area is fixed as first part *****************
 	//save inputs into file
