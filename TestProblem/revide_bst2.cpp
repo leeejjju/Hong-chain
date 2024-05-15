@@ -84,11 +84,12 @@ private:
         }
     }
 
+    //here errer this is not inoder
     void inorderRecursive(TreeNode<T>* root) {
         if (root != nullptr) {
             inorderRecursive(root->left);
-            std::cout << root->data << " ";
             inorderRecursive(root->right);
+            std::cout << root->data << " ";
         }
     }
 
@@ -179,8 +180,6 @@ int main()
 				std::cout << "Not found" << std::endl;
 			}
 			break;
-        case 1234:
-            return 0;
         default:
           	break;
         }

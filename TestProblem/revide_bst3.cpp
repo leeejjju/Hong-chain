@@ -24,7 +24,9 @@ private:
             root->left = insertRecursive(root->left, data);
         } 
         else if (data > root->data) {
-            root->right = insertRecursive(root->right, data);
+
+            //here error paramerter
+            root->right = insertRecursive(root->left, data);
         }
         else {
             // 같은 값을 가진 노드가 이미 존재하는 경우, 여기서 처리
@@ -179,8 +181,6 @@ int main()
 				std::cout << "Not found" << std::endl;
 			}
 			break;
-        case 1234:
-            return 0;
         default:
           	break;
         }

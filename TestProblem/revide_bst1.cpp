@@ -52,13 +52,14 @@ private:
             root->right = deleteRecursive(root->right, data);
         } else {
             // Case 1: No child or only one child
+            //here make error change left and right
             if (root->left == nullptr) {
-                TreeNode<T>* temp = root->right;
+                TreeNode<T>* temp = root->left;
                 delete root;
                 return temp;
             } 
             else if (root->right == nullptr) {
-                TreeNode<T>* temp = root->left;
+                TreeNode<T>* temp = root->right;
                 delete root;
                 return temp;
             }
@@ -144,8 +145,7 @@ int main()
     int a;
     int num;
 	TreeNode<int> * result;
-    int count = 0;
-    while(count < 20)
+    while(1)
     {
         std::cin >> a;
         std::cin.clear();
@@ -184,7 +184,6 @@ int main()
         default:
           	break;
         }
-        count++;
     }
     
 }
