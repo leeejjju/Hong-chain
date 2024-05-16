@@ -13,14 +13,14 @@ LIB_NAME ?=
 solution:
 ifeq ($(INCLUDE_PATH),)	# INCLUDE_PATH is empty
 ifeq ($(LIB_NAME),)	# LIB_NAME is also empty
-	$(CC) -std=c++11 test_driver.cpp solution.cpp -o solution
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -o solution
 else	# INCLUDE_PATH is empty, but LIB_NAME is defiend
-	$(CC) -std=c++11 test_driver.cpp solution.cpp -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution
 endif
 else ifeq ($(LIB_NAME),)	# INCLUDE_PATH is defiend, but LIB_NAME is empty
-	$(CC) -std=c++11 test_driver.cpp solution.cpp -I$(INCLUDE_PATH) -o solution
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I$(INCLUDE_PATH) -o solution
 else	# INCLUDE_PATH and LIB_NAME are defiend
-	$(CC) -std=c++11 test_driver.cpp solution.cpp -I$(INCLUDE_PATH) -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I$(INCLUDE_PATH) -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution
 endif
 
 #	$(CC) -std=c++11 test_driver.cpp solution.cpp -I../include -L../lib -lnowic_linux -o solution
@@ -31,14 +31,14 @@ endif
 submission:
 ifeq ($(INCLUDE_PATH),)	# INCLUDE_PATH is empty
 ifeq ($(LIB_NAME),)	# LIB_NAME is also empty
-	$(CC) -std=c++11 test_driver.cpp submission.cpp -o submission
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submission.cpp -o submission
 else	# INCLUDE_PATH is empty, but LIB_NAME is defiend
-	$(CC) -std=c++11 test_driver.cpp submission.cpp -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submission
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submission.cpp -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submission
 endif
 else ifeq ($(LIB_NAME),)	# INCLUDE_PATH is defiend, but LIB_NAME is empty
-	$(CC) -std=c++11 test_driver.cpp submission.cpp -I$(INCLUDE_PATH) -o submission
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submission.cpp -I$(INCLUDE_PATH) -o submission
 else	# INCLUDE_PATH and LIB_NAME are defiend
-	$(CC) -std=c++11 test_driver.cpp submission.cpp -I$(INCLUDE_PATH) -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submission
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submission.cpp -I$(INCLUDE_PATH) -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submission
 endif
 
 # $(CC) -std=c++11 test_driver.cpp submission.cpp -I../include -L../lib -lnowic_linux -o submission
