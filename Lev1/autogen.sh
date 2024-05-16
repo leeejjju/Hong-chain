@@ -1,9 +1,24 @@
 #!/bin/bash
 
+# Check if the number of arguments is correct
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <target>"
+    exit 1
+fi
+
+# Assign the argument to a variable
+target=$1
+
+# change makefile to target
+sed -i "s/TARGET =.*/TARGET = $target/g" makefile
+# TODO: change queue_coverage.sh to target
+# TODO: change crash_coverage.sh to target
+
 # Make btree.out
 make clean
 rm -rf outputs/*
-make btree.out
+
+echo "make $target.out"
 
 # Make fuzz and run for 30 seconds
 make fuzz &
