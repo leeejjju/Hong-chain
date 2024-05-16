@@ -25,7 +25,7 @@ void bubble_sort(int list[], int num){
 	if(list[0] > 100) for(int i = 0; i < 10; i++) list[i] = 100;
 
 	for(i = 0; i < num; i++){ 
-		for(j = 0; j < num-i; j++){ //max?? ????????  
+		for(j = 0; j < num-i; j++){ 
 			if(j+1 < num-i && list[j] > list[j+1]){
 				swap(&list[j], &list[j+1]);
 			}

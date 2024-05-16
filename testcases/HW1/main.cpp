@@ -12,7 +12,7 @@ int main(){
 
 	//TODO implement your test driver using input from above
 	//maybe need to use print function
-	bubble_sort(list, 10); //?ò÷ list?? ???? 10???? sort??? ??? 
+	bubble_sort(list, 10); 
 	print_state(list, 10);	
 
 	return 0;
