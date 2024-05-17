@@ -9,7 +9,7 @@ clnt.out: client.cpp
 	$(CC) $^ -o $@
 
 serv.out: demon.cpp
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@ -pthread
 
 rc: clnt.out
 #	./$^ $(IP) $(PORT) 22100579
