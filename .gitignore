@@ -1,3 +1,9 @@
+#fuzzing outputs
+Lev1/outputs/
+
+#vim
+.swp
+
 # Prerequisites
 *.d
 
