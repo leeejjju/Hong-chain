@@ -9,6 +9,17 @@ LIB_NAME ?=
 SID ?= 
 
 
+CRASH_DIR = outputs/default/crashes/
+
+check_for_crashes:
+	@if ls $(CRASH_DIR)id* 1> /dev/null 2>&1; then \
+	    echo "crash occurred"; \
+	else \
+	    echo "No crashes detected"; \
+	fi
+	
+
+
 # create subdirectory of students
 # make create_subdir SID=22000711
 create_subdir:
