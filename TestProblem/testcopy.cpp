@@ -10,22 +10,6 @@ int main() {
     
     // 표준 입력으로부터 문자열 입력 받기
     std::getline(std::cin, inputString);
-    if(inputString.compare("crash")==0)
-    {
-        fprintf(stderr,"here crash\n");
-        int * num = NULL;
-        *num = 12;
-    }
-
-    if(inputString.compare("incorrect")==0)
-    {
-        std::cout << "tata" << std::endl;
-    }
-
-    if(inputString.compare("incorrect2")==0)
-    {
-        std::cout << "tata2" << std::endl;
-    }
     
     // 입력받은 문자열을 출력
     std::cout << "You entered: " << inputString << std::endl;
