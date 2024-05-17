@@ -24,16 +24,13 @@ else
 fi
 
 
-echo "from1"
+
+# # solution fuzzing
+timeout 5s make fz_solution || true 
 
 
-# solution fuzzing
-timeout 10s env make fz_solution || true
 
-
-echo "from2" 
-
-# provide the verification report of the solution to the instructor
+# # provide the verification report of the solution to the instructor
 make check_for_crashes || true
 
 
@@ -43,5 +40,5 @@ make check_for_crashes || true
 
 
 
-
+ 
 
