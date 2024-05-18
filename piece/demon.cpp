@@ -17,6 +17,9 @@
 #include <iostream>
 using namespace std;
 
+#include "lib/issue/issue.cpp"
+#include "lib/util/util.cpp"
+
 #define BUF_SIZE 1024
 #define NEW_PORT_BASE 5000
 
@@ -24,6 +27,10 @@ using namespace std;
 
 void *handle_clnt(void * arg);
 int recv_file(int sock, int s_id);
+
+void register_routine(string repo_owner, string repo_name);
+void submission_routine(int s_id, string repo_owner, string repo_name);
+void finish_routine(string repo_owner, string repo_name);
 
 int main(int argc, char *argv[]) {
 
@@ -83,6 +90,16 @@ void *handle_clnt(void * arg) {
 	if((len = read(clnt_sock, &s_id, sizeof(int))) <= 0) perror("read");
 	else printf("sock: %d | student id: %d\n", clnt_sock, s_id);
 
+	int repo_len;
+	char buffer[BUF_SIZE];
+	if((len = read(clnt_sock, &repo_len, sizeof(int))) <= 0) perror("read");
+	else printf("sock: %d | repo_len: %d\n", clnt_sock, repo_len);
+	if((len = read(clnt_sock, buffer, repo_len)) <= 0) perror("read");
+	char* tmp = buffer;
+	string repo_name = basename(buffer);
+	string repo_owner = dirname(tmp);
+	cout << "sock: " << clnt_sock << " | repo: " << repo_owner << "'s " << repo_name << endl;
+
 	switch(s_id){
 
 	case 0:
@@ -93,18 +110,13 @@ void *handle_clnt(void * arg) {
 		//recv solution.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 
-		//build and test? solution
-		//TODO system("sh build.sh");
-		//write report
-		//make issue 
+		register_routine(repo_owner, repo_name);
 		close(clnt_sock);
 		return NULL;
 
 	case -1:
 		printf("FINISH\n");
-		//arrange the reports of submissions
-		//write report
-		//make issue
+		finish_routine(repo_owner, repo_name);
 		close(clnt_sock);
 		return NULL;
 
@@ -120,11 +132,7 @@ void *handle_clnt(void * arg) {
 		//recv submission.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 
-		//build
-		//compare and grading
-		//write report
-		//make issue
-
+		submission_routine(s_id, repo_owner, repo_name);
 	}	
 		
 		
@@ -135,7 +143,7 @@ void *handle_clnt(void * arg) {
 
 }
 
-
+/*
 //save file from sock
 int recv_file(int sock, int s_id) {
 
@@ -195,5 +203,65 @@ int recv_file(int sock, int s_id) {
 
     return 0;
 }
+*/
 
+void register_routine(string repo_owner, string repo_name){
+		//build and test? solution
+		//TODO system("sh build.sh");
+		//write report
+		//make issue
+		string github_token;
+		cout << "token: ";
+		cin >> github_token;
+		string title = "This is test title. for your REGISTER :) ";
+		string report = "# Test body \n\n --- hello world<br> ";
+		create_github_issue(title, report, repo_owner, repo_name, github_token);
+
+
+}
+
+void finish_routine(string repo_owner, string repo_name){
+		//arrange the reports of submissions
+
+
+		//write report
+
+
+		//make issue
+		string github_token;
+		cout << "token: ";
+		cin >> github_token;
+		string title = "This is test title. for your FINISH request :) ";
+		string report = "# Test body \n\n --- hello world<br> ";
+		create_github_issue(title, report, repo_owner, repo_name, github_token);
+
+
+
+}
+
+void submission_routine(int s_id, string repo_owner, string repo_name){
+
+		//build
+
+
+		//compare and grading
+
+
+		//write report
+
+
+
+		//make issue
+		string github_token;
+		cout << "token: ";
+		cin >> github_token;
+		string title = "This is test title. for your SUBMIT :) ";
+		string report = "# Test body \n\n --- hello world<br> ";
+		create_github_issue(title, report, repo_owner, repo_name, github_token);
+
+
+
+
+
+}
 

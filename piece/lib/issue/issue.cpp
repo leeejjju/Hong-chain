@@ -47,6 +47,7 @@ void create_github_issue(const std::string& title, const std::string& body, std:
     curl_global_cleanup();
 }
 
+/*
 int main() {
 	std::string tok;
 	std::cout << "token: ";
@@ -59,4 +60,4 @@ int main() {
     create_github_issue(issue_title, issue_body, repo_owner, repo_name, tok);
     return 0;
 }
-
+*/

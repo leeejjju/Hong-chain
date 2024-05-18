@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <string.h>
 using namespace std;
-
+#define BUF_SIZE 1024
 
 
 //script that make directory if not exist... 
@@ -143,6 +143,68 @@ int are_they_same(int sol_fd, int sub_fd, int* index){
 
 }
 
+
+//save file from sock
+int recv_file(int sock, int s_id) {
+
+    uint32_t filename_len;
+    char filename[BUF_SIZE-128];
+    char filepath[BUF_SIZE];
+    uint32_t file_size;
+
+    ssize_t recv_len;
+
+
+	//get filename_len
+    if ((recv_len = recv(sock, &filename_len, sizeof(filename_len), 0)) <= 0) {
+        std::cerr << "Failed to receive filename length: " << recv_len << std::endl;
+        return 1;
+    }
+
+	//get filename
+    recv_len = recv(sock, filename, filename_len, 0);
+    if (recv_len != filename_len) {
+        std::cerr << "Failed to receive filename" << std::endl;
+        return 1;
+    }
+    else filename[filename_len] = 0;
+	if(s_id) sprintf(filepath, "submissions/%d/%s", s_id, basename(filename));
+	else strcpy(filepath, basename(filename));
+
+	//get file contents and save them into new file
+	int fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if(fd <= 0) return 1;
+
+
+    // 파일 크기 수신
+    recv_len = recv(sock, &file_size, sizeof(file_size), 0);
+    if (recv_len != sizeof(file_size)) {
+        std::cerr << "Failed to receive file size" << std::endl;
+		close(fd);
+        return 1;
+    }
+
+    // 파일 데이터 수신 및 저장
+    uint32_t total_recv_len = 0;
+	char tok[1];
+    while (total_recv_len < file_size) {
+        if ((recv_len = recv(sock, &tok, 1, 0)) <= 0) {
+            std::cerr << "Error receiving file data" << std::endl;
+			close(fd);
+            return 1;
+        }
+		write(fd, tok, recv_len);
+        total_recv_len += recv_len;
+    }
+
+    // 파일 닫기
+	close(fd); //done writing
+	printf("succesfully recved and saved file: %s\n", filepath);
+
+    return 0;
+}
+
+/*
 int main(void){
 
 	//save_incorrect(22100679, " ", "SUBMEOW/MEOW", "SUBMEOW/MEOW3");
@@ -169,3 +231,4 @@ int main(void){
 	else cout << "they are not the same. idx: " << err_idx << endl;
 
 }
+*/

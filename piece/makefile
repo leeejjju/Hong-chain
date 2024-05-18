@@ -1,21 +1,21 @@
 CC = g++
 IP = 127.0.0.1
 PORT = 9090
-
-all: clnt.out serv.out
+CFLAGS = -pthread -I/usr/include/jsoncpp -lcurl -ljsoncpp
+all: demon.out
 
 
 clnt.out: client.cpp
 	$(CC) $^ -o $@
 
-serv.out: demon.cpp
-	$(CC) $^ -o $@ -pthread
+demon.out: demon.cpp
+	$(CC) $^ -o $@ $(CFLAGS) 
 
 rc: clnt.out
 #	./$^ $(IP) $(PORT) 22100579
 	python3 action.py $(IP) $(PORT) "SUBMIT:22100579"
 
-rs: serv.out
+rs: demon.out
 	./$^ $(PORT)
 	
 clean:
