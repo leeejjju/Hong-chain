@@ -12,6 +12,7 @@
 #include <sys/wait.h>
 #include <libgen.h>
 #include <sys/types.h>
+#include <signal.h>
 #include <iostream>
 
 using namespace std;
@@ -21,8 +22,13 @@ int crash_cnt = 0;
 int incorrect_cnt = 0;
 int student_id = 0;
 
+void timeout_handler(int signum) 
+{
+    kill(getpid(), SIGTERM);
+}
+
 //return 1 on failure, 0 on success. plz pass the opend file descriptor. 
-int save_crash(int student_id, char* input_filepath, int output_fd){
+int save_crash(int student_id, char* input_filepath, FILE* output_fp){
 
 	char filename[128];
 	ssize_t len, read_len, written_len;
@@ -40,21 +46,17 @@ int save_crash(int student_id, char* input_filepath, int output_fd){
 	//save output by fileIO
 	char filepath[1024];
 	char buffer[1024];
-	int fd = 0;
+	FILE* fp = 0;
 
 	len = sprintf(filename, "crash_output_%03d", crash_cnt);
 	filename[len] = 0;
 	sprintf(filepath, "submissions/%d/report/crash/%s", student_id, filename);
 	cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
-    if ((fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0) return 1; //on failure return 1
-    while ((read_len = read(output_fd, buffer, sizeof(buffer))) > 0) {
-        written_len = write(fd, buffer, read_len);
-        if (written_len != read_len) {
-            close(fd);
-            return 1;
-        }
-    }close(fd);
+    if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
+    while (fgets(buffer, sizeof(buffer), output_fp) !=NULL) {
+        fwrite(buffer,1,strlen(buffer), fp);
+    }fclose(fp);
 
 	crash_cnt++;
 	return 0;
@@ -62,7 +64,7 @@ int save_crash(int student_id, char* input_filepath, int output_fd){
 }
 
 //return 1 on failure, 0 on success. plz pass the opend file descriptor.
-int save_incorrect(int student_id, char*input_filepath, int sol_fd, int sub_fd){
+int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_fp){
 
 	char filename[128];
 	ssize_t len, read_len, written_len;
@@ -73,43 +75,35 @@ int save_incorrect(int student_id, char*input_filepath, int sol_fd, int sub_fd){
 	len = sprintf(filename, "input_%03d", incorrect_cnt);
 	filename[len] = 0;
 	sprintf(cmd, "cp %s submissions/%d/report/incorrect/%s", input_filepath, student_id, filename);
-	cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
+	// cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
     if (system(cmd)) return 1; //on failure return 1
 
 	//save outputs by fileIO
 	char filepath[1024];
 	char buffer[1024];
-	int fd = 0;
+	FILE * fp = NULL;
 
 	len = sprintf(filename, "sol_output_%03d", incorrect_cnt);
 	filename[len] = 0;
 	len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
 	filepath[len] = 0;
-	cout << "filename: " << filename << endl << "path: " << filepath << endl;
+	// cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
-	if ((fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0) return 1; //on failure return 1
-    while ((read_len = read(sol_fd, buffer, sizeof(buffer))) > 0) {
-        written_len = write(fd, buffer, read_len);
-        if (written_len != read_len) {
-            close(fd);
-            return 1;
-        }
-    }close(fd);
+    if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
+    while (fgets(buffer, sizeof(buffer), sol_fp) !=NULL) {
+        fwrite(buffer,1,strlen(buffer), fp);
+    }fclose(fp);
 
 	len = sprintf(filename, "sub_output_%03d", incorrect_cnt);
 	filename[len] = 0;
 	len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
 	filepath[len] = 0;
-	cout << "filename: " << filename << endl << "path: " << filepath << endl;
+	// cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
-	if ((fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0) return 1; //on failure return 1
-    while ((read_len = read(sub_fd, buffer, sizeof(buffer))) > 0) {
-        written_len = write(fd, buffer, read_len);
-        if (written_len != read_len) {
-            close(fd);
-            return 1;
-        }
-    }close(fd);
+	if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
+    while (fgets(buffer, sizeof(buffer), sub_fp) !=NULL) {
+        fwrite(buffer,1,strlen(buffer), fp);
+    }fclose(fp);
 
 	incorrect_cnt++;
 	return 0;
@@ -160,9 +154,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
     struct dirent *ent = NULL ;
     struct stat st;
 
-    while (ent = readdir(dir))
+    while ((ent = readdir(dir)))
     {
-        
         
         FILE * sol_stderr = tmpfile();
         FILE * sol_stdout = tmpfile();
@@ -214,14 +207,17 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     return 1;
                 }
 
-                char *args[] = {sol_exec_path, NULL};                         
+                char *args[] = {sol_exec_path, NULL};
+                alarm(3);
+
                 if(execv(sol_exec_path,args))                                 
                 {                                                             
                     perror("exec");                                           
                 }                                                             
                 exit(1);                                                      
             }
-
+            int sol_status;
+            waitpid(sol_pid,&sol_status,0);
             //exec submission
             int sub_pid = fork();
 
@@ -251,8 +247,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     perror("dup2");
                     return 1;
                 }
-
-                char *args[] = {sub_exec_path, NULL};                         
+                char *args[] = {sub_exec_path, NULL}; 
+                alarm(3);
                 if(execv(sub_exec_path,args))                                 
                 {                                                             
                     perror("exec");                                           
@@ -260,8 +256,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                 exit(1);                                                      
             }                                                                  
 
-            int sol_status;
-            waitpid(sol_pid,&sol_status,0);
+            
 
             int sub_status;
             waitpid(sub_pid,&sub_status,0);
@@ -271,29 +266,25 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
             rewind(sol_stdout);
             rewind(sol_stderr);
 
-            // if (WIFEXITED(sol_status)) {
-            // // 자식 프로세스가 정상 종료되었는지 확인
-            //     // printf("sol exited with status %d\n", WEXITSTATUS(sol_status));
-            // } 
-            // else if (WIFSIGNALED(sol_status)) {
-            //     // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
-            //     printf("sol killed by signal %d\n", WTERMSIG(sol_status));
-            //     if (WCOREDUMP(sol_status)) {
-            //         printf("sol produced a core dump.\n");
-            //     }
-            // }
-
             if (WIFEXITED(sub_status)) {
             // 자식 프로세스가 정상 종료되었는지 확인
-                // printf("sub exited with status %d\n", WEXITSTATUS(sub_status));
+                printf("sub exited with status %d\n", WEXITSTATUS(sub_status));
+                printf("%s\n",input_file_path);
+
             } 
-            else if (WIFSIGNALED(sub_status)) {
+            if (WIFSIGNALED(sub_status)) {
                 // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
-                if((WIFSIGNALED(sol_status) && (WTERMSIG(sub_status) != WTERMSIG(sol_status))) || !WIFSIGNALED(sol_status))
+                if(WIFEXITED(sol_status) || (WIFSIGNALED(sol_status) && (WTERMSIG(sub_status) != WTERMSIG(sol_status))) )
                 {
-                    //TODO change crash_cnt to student_id
-                    save_crash(student_id, input_file_path, fileno(sub_stderr)); 
+                    //Todo checking timeout using SIGTERM
+                    // printf("aldfjlajdf;ljal;dfjlkajdfl;jalk\n");
+                    save_crash(student_id, input_file_path, sub_stderr); 
                         // printf("call save_crash_routin\n");
+                    free(input_file_path) ;                                                     
+                    fclose(sol_stderr);
+                    fclose(sol_stdout);                                                  
+                    fclose(sub_stderr);                                                  
+                    fclose(sub_stdout); 
                     continue;
                 }
                 
@@ -306,12 +297,12 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
             char sub_buff[256];
             char sol_buff[256];
 
-            // while(fgets(sub_buff, sizeof(sub_buff), sub_stderr) !=NULL)
+            // while(fgets(sub_buff, sizeof(sub_buff), sub_stdout) !=NULL)
             // {
             //     printf("%s\n",sub_buff);
             // }
 
-            //compare sol_output and sub_output
+            // compare sol_output and sub_output
             while(fgets(sub_buff, sizeof(sub_buff), sub_stdout) !=NULL)
             {
                 fgets(sol_buff,sizeof(sol_buff), sol_stdout);
@@ -320,7 +311,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     rewind(sol_stdout);
                     rewind(sub_stdout);
                     //TODO change incorrect_cnt to student_id
-                    save_incorrect(student_id, input_file_path, fileno(sol_stdout), fileno(sub_stdout)); 
+                    // printf("save incorrect\n");
+                    save_incorrect(student_id, input_file_path, sol_stdout,sub_stdout); 
                     break;
                 }
             }
@@ -328,14 +320,23 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
         }                                                                                                                                      
         else {                                                                
         }                                                                     
-        free(input_file_path) ;                                                     
+        free(input_file_path);
+        fclose(sol_stderr);
+        fclose(sol_stdout);                                                  
+        fclose(sub_stderr);                                                  
+        fclose(sub_stdout);                                                  
+
     }                                                                         
                                                                               
     closedir(dir);  
     return 0;                                                          
 }                                                                             
 int main()                                                                    
-{          
+{    
+    signal(SIGALRM, timeout_handler);
+    // exec_input("./solution","./submission_bst1","solution_fuzz_output/default/queue");
+    // exec_input("./solution","./submission_bst3","solution_fuzz_output/default/queue");
+
     exec_input("./testcopy","./test","Testinput");
 }                                                                             
                               
