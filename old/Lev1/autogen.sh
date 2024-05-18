@@ -21,6 +21,7 @@ rm -rf outputs/*
 echo "make $target.out"
 
 # Make fuzz and run for 30 seconds
+export TARGET=$target
 make fuzz &
 sleep 30
 kill %1
