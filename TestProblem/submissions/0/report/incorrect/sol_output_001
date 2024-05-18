@@ -1,0 +1,13 @@
+20 
+1 20 
+1 5 20 
+Node with value 20 already exists in the tree.
+1 5 20 
+1 3 5 20 
+Node with value 3 already exists in the tree.
+1 3 5 20 
+1 3 5 20 51 
+Found: 20
+Node with value 5 already exists in the tree.
+1 3 5 20 51 
+Found: 1

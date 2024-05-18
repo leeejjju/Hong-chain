@@ -13,6 +13,7 @@
 #include <libgen.h>
 #include <sys/types.h>
 #include <iostream>
+#include <signal.h>
 
 using namespace std;
 
@@ -20,6 +21,11 @@ using namespace std;
 int crash_cnt = 0;
 int incorrect_cnt = 0;
 int student_id = 0;
+
+void timeout_handler(int signum) 
+{
+    kill(getpid(), SIGTERM);
+}
 
 //return 1 on failure, 0 on success. plz pass the opend file descriptor. 
 int save_crash(int student_id, char* input_filepath, int output_fd){
@@ -214,7 +220,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     return 1;
                 }
 
-                char *args[] = {sol_exec_path, NULL};                         
+                char *args[] = {sol_exec_path, NULL};
+                alarm(3);
                 if(execv(sol_exec_path,args))                                 
                 {                                                             
                     perror("exec");                                           
@@ -252,7 +259,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     return 1;
                 }
 
-                char *args[] = {sub_exec_path, NULL};                         
+                char *args[] = {sub_exec_path, NULL}; 
+                alarm(3);
                 if(execv(sub_exec_path,args))                                 
                 {                                                             
                     perror("exec");                                           
@@ -291,7 +299,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                 // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
                 if((WIFSIGNALED(sol_status) && (WTERMSIG(sub_status) != WTERMSIG(sol_status))) || !WIFSIGNALED(sol_status))
                 {
-                    //TODO change crash_cnt to student_id
+                    //Todo checking timeout using SIGTERM
                     save_crash(student_id, input_file_path, fileno(sub_stderr)); 
                         // printf("call save_crash_routin\n");
                     continue;
@@ -335,7 +343,12 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
     return 0;                                                          
 }                                                                             
 int main()                                                                    
-{          
-    exec_input("./testcopy","./test","Testinput");
+{    
+    signal(SIGALRM, timeout_handler);
+    // exec_input("./solution","./submission_bst1","solution_fuzz_output/default/queue");
+    exec_input("./solution","./submission_bst3","solution_fuzz_output/default/queue");
+
+    // exec_input("./testcopy","./test","Testinput");
+
 }                                                                             
                               
