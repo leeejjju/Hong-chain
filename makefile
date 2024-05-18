@@ -13,9 +13,9 @@ CRASH_DIR = outputs/default/crashes/
 
 check_for_crashes:
 	@if ls $(CRASH_DIR)id* 1> /dev/null 2>&1; then \
-	    echo "crash occurred"; \
+	    echo "\nCrash Occurred....\nPlease fix the code."; \
 	else \
-	    echo "No crashes detected"; \
+	    echo "\nNo crashes detected\nYOU CAN USE DAEMON!!"; \
 	fi
 	
 
@@ -76,8 +76,9 @@ fz_submission:
 	mkdir -p submissions/$(SID)/report/crash	
 	mkdir -p submissions/$(SID)/report/incorrect
 # make outputs folder to save fuzz results
-	mkdir -p submissions/$(SID)/outputs		
-	AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs submissions/$(SID)/submission.out
+	mkdir -p submissions/$(SID)/outputs	
+	cd submissions/$(SID) && AFL_NO_AFFINITY=1 ../../$(FZ) -i ../../inputs -o outputs ./submission.out
+#	AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs submissions/$(SID)/submission.out
 # how to use :
 # timeout 10s env make fz_submission SID=22000711
 

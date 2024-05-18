@@ -25,13 +25,14 @@ fi
 
 
 
-# # solution fuzzing
-timeout 5s make fz_solution || true 
+# solution fuzzing
+timeout 10s make fz_solution 
 
 
+sleep 1s
 
-# # provide the verification report of the solution to the instructor
-make check_for_crashes || true
+# provide the verification report of the solution to the instructor
+make check_for_crashes 
 
 
 

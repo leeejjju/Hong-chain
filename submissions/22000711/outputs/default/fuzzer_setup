@@ -1,7 +1,7 @@
 # environment variables:
-AFL_CUSTOM_INFO_PROGRAM=submissions/22000711/submission.out
+AFL_CUSTOM_INFO_PROGRAM=./submission.out
 AFL_CUSTOM_INFO_PROGRAM_ARGV=
-AFL_CUSTOM_INFO_OUT=submissions/22000711/outputs/default
+AFL_CUSTOM_INFO_OUT=outputs/default
 AFL_NO_AFFINITY=1
 # command line:
-'AFLplusplus/afl-fuzz' '-i' 'inputs' '-o' 'submissions/22000711/outputs' 'submissions/22000711/submission.out'
+'../../AFLplusplus/afl-fuzz' '-i' '../../inputs' '-o' 'outputs' './submission.out'

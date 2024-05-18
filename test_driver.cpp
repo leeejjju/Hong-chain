@@ -1,114 +1,152 @@
-//  driver.cpp
-//  This driver is used to test liststack.cpp that implements
-//  the basic linked list of nodes.
-//  Author: Youngsup Kim, idebtor@gmail.com
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <iostream>
+#include "db_stack.h"
 
-#include <ctime>
-#include <climits>
-#include "nowic.h"
-#include "liststack.h"
-using namespace std;
-
-
-int randint(int min, int max) {
-	return std::rand() % (max + 1 - min) + min;
+// if input doesn't meet condition return 1, otherwise return 0
+// check if the input meets condition
+int input_ok(char * ch) {
+    if (!isdigit((unsigned char)*ch)) {
+        return 1; // Return false if character is not digit
+    }
+    return 0;
 }
 
-void show_timeit(int begin) { 	// display elapsed time
-	cout << "\tcpu: " << ((double)clock() - begin) / CLOCKS_PER_SEC << " sec\n";
+// if the struct isn't correct return 1, otherwise return 0
+// check if the struct is correct
+// mode: push(0)/pop(1), before_size: before size of execute mode, after_size: after size of execute mode
+int rep_ok(int before_size, int after_size, int mode) {
+    if (mode == 0) {    // push order
+        if ((before_size + 1) != after_size) {
+            return 1;
+        }
+    }
+    else {      // pop order
+        if (before_size == 0 && after_size == 0) {
+            return 0;
+        }
+        if ((before_size - 1) != after_size) {
+            return 1;
+        }
+    }
+    
+    return 0;
 }
 
-int main() {
-	char c;
-	int val, N = 0;
-	clock_t begin = 0;
-	Node* stack = nullptr;
-	int min = INT_MAX, max = INT_MIN;
-	bool show_all = true;	// toggle the way of showing values
-	int show_n = 10;		// the number of items to show per line
-	string show_menu[] = { "HEAD/TAIL", "ALL" };
+// record the function flow
+void write_log(int fd, char * log_buf) {
 
-	setvbuf(stdout, NULL, _IONBF, 0); // prevent the output from buffered on console
+    size_t log_len = strlen(log_buf);
+    ssize_t written = 0, written_acc = 0;
 
-	// // read all input by calling read_input and store them to file
-	// read_input();
+    while (written_acc != log_len) {
+        written = write(fd, log_buf + written_acc, log_len - written_acc);
+        written_acc += written;
+    }
+}
 
-	do {
-		cout << "\n\tStack Using List(nodes:" << size(stack) 
-			 << ", show:" << show_menu[show_all] << "," << show_n << ") \n";
-		cout << "\tp - push   O(1)\t";	  cout << "\tP - push N   O(n)\n";
-		cout << "\to - pop    O(1)\t";    cout << "\tO - pop  N   O(n)\n";
-		cout << "\tt - top    O(1)\t";    cout << "\tm - min,max  O(n)\n";
-		if (show_all)
-			cout << "\ts - show [HEAD/TAIL]\t";
-		else
-			cout << "\ts - show [ALL] items\t";
-		cout << "n - n items per line\n";
-		cout << "\tc - clear  O(n)\n";
+// print function checks the status after the command is executed
+void print_stack(Node * p) {
+    printf("-------------- PRINT STACK ----------------\n");
+    while (p != nullptr) {
+        printf("%c  ", p->data);
+        p = p->next;
+    }
+   printf("\n-------------- PRINT STACK ----------------\n\n\n");
+}
 
-		c = GetChar("\tCommand[q to quit]: ");
-		// execute the command
-		switch (c) {
-		case 'p':
-			val = GetInt("\tEnter a number to push: ");
-			stack = push(stack, val);
-			break;
 
-		case 'o':  // pops(deletes) the top of the stack
-			if (empty(stack)) break;
-			stack = pop(stack);
-			break;
+int main(int argc, char * argv[]) {
 
-		case 't':  // show the top of the stack
-			if (empty(stack)) break;
-			cout << "\tTop: " << top(stack)->data << endl;
-			break;
+    Node * stack = nullptr;
 
-		case 'm': // find min, max in stack
-			if (empty(stack)) break;
-			begin = clock();
-			minmax(stack, min, max);
-			begin = clock();
-			cout << "\tMin: " << min << "\t Max: " << max << endl;
-			break;
+    char buf[32];
+    scanf("%31s", buf);
+    buf[31] = '\0';
 
-		case 's': // toggle the way of showing
-			show_all ? show_all = false : show_all = true;
-			break;
+    printf("len: %ld\n", strlen(buf));
 
-		case 'n':
-			val = GetInt("\tn items per line to show: ");
-			if (val >= 1) show_n = val;
-			break;
+    int before_size;    // for rep_ok
+    char log_file[128]; // for log
+    char log_buf[512];  // for log
+    int fd;             // for log
 
-		case 'c':
-			if (empty(stack)) break;
-			stack = clear(stack);
-			break;
+    /* for log */   
+    sprintf(log_file, "./log.md");
+    fd = open(log_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    /* for log */
 
-		case 'P':
-			N = GetInt("\tEnter number of nodes to push: ");
-			val = GetInt("\tEnter a number to begin with: ");
-			begin = clock();
-			stack = push(stack, val, N);
-			show_timeit(begin);
-			break;
+    for (char * ch = buf; *ch != 0x0; ch++) {
+        switch (*ch) {
+            case 'a':
+                // printf("ch: %c\n", *ch);
+                if (*(ch+1) != 0x0) {
+                    ch++;
+                }
 
-		case 'O':
-			if (empty(stack)) break;
-			N = GetInt("\tEnter number of nodes to pop: ");
-			begin = clock();
-			stack = pop(stack, N);
-			show_timeit(begin);
-			break;
+                // check input is correct
+                if (input_ok(ch) == 1) {
+                    fprintf(stderr, "push input_ok failed\n");
+                    remove(log_file);
+                    close (fd);
+                    exit(EXIT_FAILURE);
+                }
 
-		default:
-			break;
-		}
-		show(stack, show_all, show_n);
-	} while (c != 'q');
+                before_size = stack_size(stack);
+                stack = stack_push(stack, *ch);
 
-	clear(stack);
-	cout << "\n\tHappy Coding~~\n";
-	return EXIT_SUCCESS;
+                // record log
+                sprintf(log_buf, "stack Pushed\n");
+                write_log(fd, log_buf);
+                
+                
+
+                // check struct 
+                if ((rep_ok(before_size, stack_size(stack), 0)) == 1) {
+                    fprintf(stderr, "push rep_ok failed\n");
+                    remove(log_file);
+                    close (fd);
+                    exit(EXIT_FAILURE);
+                }
+
+                print_stack(stack);
+                break;
+
+            case 'b':
+                before_size = stack_size(stack);
+                stack = stack_pop(stack);
+
+                // record log
+                sprintf(log_buf, "Popping from stack\n");
+                write_log(fd, log_buf);
+
+
+                // check struct 
+                if ((rep_ok(before_size, stack_size(stack), 1)) == 1) {
+                    fprintf(stderr, "pop rep_ok failed\n");
+                    remove(log_file);
+                    close (fd);
+                    exit(EXIT_FAILURE);
+                }
+
+                print_stack(stack);
+                break;
+
+            default:
+                break;
+        }
+    }   
+
+    if (!stack_empty(stack)) {
+        printf("top node data: %c\n", stack_top(stack)->data);
+    }
+
+    stack_clear(stack);
+
+
+    close (fd);
 }
