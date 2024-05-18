@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
 
 
 
+
 //handle one student connection from github action.
 void *handle_clnt(void * arg) {
 
@@ -93,6 +94,7 @@ void *handle_clnt(void * arg) {
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 
 		//build and test? solution
+		//TODO system("sh build.sh");
 		//write report
 		//make issue 
 		close(clnt_sock);
@@ -114,7 +116,6 @@ void *handle_clnt(void * arg) {
 		system(cmd);
 		sprintf(cmd, "mkdir -p submissions/%d", s_id);
 		system(cmd);
-
 
 		//recv submission.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
