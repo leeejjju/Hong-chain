@@ -1,0 +1,59 @@
+=================================================================
+==35014==ERROR: AddressSanitizer: heap-use-after-free on address 0x603000001bd8 at pc 0x000102632e21 bp 0x7ff7bd8cf210 sp 0x7ff7bd8cf208
+READ of size 8 at 0x603000001bd8 thread T0
+    #0 0x102632e20 in BST<int>::inorderRecursive(TreeNode<int>*) submission_bst3.cpp:91
+    #1 0x102632f12 in BST<int>::inorderRecursive(TreeNode<int>*) submission_bst3.cpp:93
+    #2 0x102632178 in BST<int>::inorderTraversal() submission_bst3.cpp:113
+    #3 0x102631ada in main submission_bst3.cpp:170
+    #4 0x7ff8045e441e in start+0x76e (dyld:x86_64+0xfffffffffff6e41e)
+
+0x603000001bd8 is located 8 bytes inside of 24-byte region [0x603000001bd0,0x603000001be8)
+freed by thread T0 here:
+    #0 0x102b79a2d in wrap__ZdlPv+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0xeca2d)
+    #1 0x102636983 in BST<int>::deleteRecursive(TreeNode<int>*, int) submission_bst3.cpp:59
+    #2 0x102636637 in BST<int>::deleteRecursive(TreeNode<int>*, int) submission_bst3.cpp:52
+    #3 0x1026322c1 in BST<int>::deleteNode(int) submission_bst3.cpp:105
+    #4 0x102631ad1 in main submission_bst3.cpp:169
+    #5 0x7ff8045e441e in start+0x76e (dyld:x86_64+0xfffffffffff6e41e)
+
+previously allocated by thread T0 here:
+    #0 0x102b7960d in wrap__Znwm+0x7d (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0xec60d)
+    #1 0x102632646 in BST<int>::insertRecursive(TreeNode<int>*, int) submission_bst3.cpp:20
+    #2 0x1026327d5 in BST<int>::insertRecursive(TreeNode<int>*, int) submission_bst3.cpp:24
+    #3 0x102632076 in BST<int>::insert(int) submission_bst3.cpp:101
+    #4 0x10263190d in main submission_bst3.cpp:161
+    #5 0x7ff8045e441e in start+0x76e (dyld:x86_64+0xfffffffffff6e41e)
+
+SUMMARY: AddressSanitizer: heap-use-after-free submission_bst3.cpp:91 in BST<int>::inorderRecursive(TreeNode<int>*)
+Shadow bytes around the buggy address:
+  0x603000001900: 00 00 00 00 fa fa 00 00 00 00 fa fa 00 00 00 00
+  0x603000001980: fa fa 00 00 00 00 fa fa 00 00 00 00 fa fa 00 00
+  0x603000001a00: 00 00 fa fa 00 00 00 00 fa fa 00 00 00 00 fa fa
+  0x603000001a80: 00 00 00 00 fa fa 00 00 00 00 fa fa 00 00 00 00
+  0x603000001b00: fa fa 00 00 00 fa fa fa 00 00 00 fa fa fa fd fd
+=>0x603000001b80: fd fa fa fa 00 00 00 fa fa fa fd[fd]fd fa fa fa
+  0x603000001c00: 00 00 00 fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x603000001c80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x603000001d00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x603000001d80: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x603000001e00: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==35014==ABORTING

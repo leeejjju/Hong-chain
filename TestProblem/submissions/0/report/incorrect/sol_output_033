@@ -1,0 +1,17 @@
+2 
+Node with value 2 already exists in the tree.
+2 
+1 2 
+1 2 50 
+1 2 9 50 
+1 2 3 9 50 
+0 1 2 3 9 50 
+Node with value 2 already exists in the tree.
+0 1 2 3 9 50 
+0 2 3 9 50 
+0 2 3 50 
+0 2 3 50 
+0 2 3 50 
+0 2 3 50 
+0 2 3 50 
+0 2 3 50 
