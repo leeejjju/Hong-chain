@@ -13,10 +13,14 @@ CRASH_DIR = outputs/default/crashes/
 
 check_for_crashes:
 	@if ls $(CRASH_DIR)id* 1> /dev/null 2>&1; then \
-	    echo "\nCrash Occurred....\nPlease fix the code."; \
+	    echo "Crash Occurred....\nPlease fix the code." > outputs/report; \
 	else \
-	    echo "\nNo crashes detected\nYOU CAN USE DAEMON!!"; \
+	    echo "No crashes detected\nYOU CAN USE DAEMON!!" > outputs/report; \
 	fi
+	@echo "\nexecs_done        : `grep -Po 'execs_done\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report; \
+	echo "saved_crashes     : `grep -Po 'saved_crashes\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report; \
+	echo "saved_hangs       : `grep -Po 'saved_hangs\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report
+
 	
 
 
@@ -28,6 +32,7 @@ create_subdir:
 
 # make solution execution file
 solution:
+	mkdir -p .log
 ifeq ($(INCLUDE_PATH),)	# INCLUDE_PATH is empty
 ifeq ($(LIB_NAME),)	# LIB_NAME is also empty
 	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -o solution.out
@@ -40,12 +45,14 @@ else	# INCLUDE_PATH and LIB_NAME are defiend
 	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I$(INCLUDE_PATH) -L$(LIB_PATH) -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution.out
 endif
 
+#	make solution INCLUDE_PATH=include
 #	$(CC) -std=c++11 test_driver.cpp solution.cpp -I../include -L../lib -lnowic_linux -o solution
 
 
 
 # make submission execution file
 submission:
+	mkdir -p .log
 ifeq ($(INCLUDE_PATH),)	# INCLUDE_PATH is empty
 ifeq ($(LIB_NAME),)	# LIB_NAME is also empty
 	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submissions/$(SID)/submission.cpp -o submissions/$(SID)/submission.out
@@ -66,8 +73,8 @@ endif
 # solution file fuzzing
 fz_solution: 
 	mkdir -p outputs
-	AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out
-# AFL_NO_AFFINITY=1 make fz_solution 
+	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out 
+# make fz_solution 
 
 
 # submission file fuzzing
@@ -77,10 +84,9 @@ fz_submission:
 	mkdir -p submissions/$(SID)/report/incorrect
 # make outputs folder to save fuzz results
 	mkdir -p submissions/$(SID)/outputs	
-	cd submissions/$(SID) && AFL_NO_AFFINITY=1 ../../$(FZ) -i ../../inputs -o outputs ./submission.out
-#	AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs submissions/$(SID)/submission.out
+	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs submissions/$(SID)/submission.out 
 # how to use :
-# timeout 10s env make fz_submission SID=22000711
+# make fz_submission SID=22000711
 
 
 

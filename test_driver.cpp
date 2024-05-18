@@ -7,6 +7,7 @@
 #include <iostream>
 #include "db_stack.h"
 
+
 // if input doesn't meet condition return 1, otherwise return 0
 // check if the input meets condition
 int input_ok(char * ch) {
@@ -76,7 +77,8 @@ int main(int argc, char * argv[]) {
     int fd;             // for log
 
     /* for log */   
-    sprintf(log_file, "./log.md");
+    pid_t pid = getpid();
+    sprintf(log_file, "./.log/log_%d", pid);
     fd = open(log_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     /* for log */
 
