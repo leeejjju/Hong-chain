@@ -3,7 +3,7 @@ FZ=AFLplusplus/afl-fuzz
 
 
 # variables
-INCLUDE_PATH ?= 
+INCLUDE_PATH ?= include
 LIB_PATH ?= 
 LIB_NAME ?= 
 SID ?= 

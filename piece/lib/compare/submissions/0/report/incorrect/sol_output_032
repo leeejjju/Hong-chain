@@ -1,0 +1,17 @@
+1 
+1 2 
+1 2 3 
+1 2 3 390 
+1 2 3 124 390 
+1 2 3 99 124 390 
+1 2 3 99 124 390 501 
+Found: 1
+Node with value 124 already exists in the tree.
+1 2 3 99 124 390 501 
+Node with value 99 already exists in the tree.
+1 2 3 99 124 390 501 
+1 2 3 50 99 124 390 501 
+Node with value 3 already exists in the tree.
+1 2 3 50 99 124 390 501 
+Found: 3
+Found: 3
