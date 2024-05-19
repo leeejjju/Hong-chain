@@ -179,8 +179,11 @@ string finish() {
 }
 
 
-string register_issue() {
-    system("./build.sh include");
+string register_issue(string lib_path = "", string lib_name = "" ) {
+
+    string cmd = string("./build.sh ") + lib_path + lib_name;
+    const char * cmd_str = cmd.c_str();
+    system(cmd_str);
 
     string register_report;
 
