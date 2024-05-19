@@ -12,64 +12,124 @@
 #include <sys/wait.h>
 #include <libgen.h>
 #include <sys/types.h>
+#include <fstream>
+#include <sstream>
 #include <iostream>
 
 using namespace std;
 
-char keywords[8][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks" };
+char keywords[9][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks", "infinite loop"};
 
 int crash_cnt = 0;
 int incorrect_cnt = 0;
 int student_id = 0;
 
-bool crash_check = {false};
 
+// return 1 on failure, 0 on success
+int file_content_to_report(const char * filename, std::string& report_str, struct stat st) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        return 1; // Failed to open file
+    }
+
+    string line;
+    while (getline(file, line)) {
+        report_str += line + "\n"; // Add each line to the report string
+        report_str += "<br>";
+    }
+
+    file.close();
+    return 0;
+}
 
 
 // return 1 on failure, 0 on success
-int write_report() {
-    char crash_input[64];
-    char crash_output[64];
+string write_report(string& report_str) {
+    char crash_log[128];
+    char sub_log[128];
+    char sol_log[128];
+    int i;
+    string buf, error = "ERROR";
     struct stat st1, st2;
+    bool pass_flag = true;
 
-    // check crash files and write md
-    for (int i = 0; i < 8; i++) {
-        sprintf(crash_input, "submissions/%/report/crash_input_%");
-        sprintf(crash_output, "submissions/%/report/crash_output_%");
-        if (stat(crash_input, &st1) == -1 && stat(crash_output, &st2) == -1) {
+    // write "Crash"
+    report_str += "<details><summary><strong>Crash</strong></summary>";
+    // check crash log files and write md
+    for (i = 0; i < 9; i++) {
+        sprintf(crash_log, "submissions/%d/report/log/crash/crash_log_%d", student_id, i);
+        if (stat(crash_log, &st1) == -1) {
             continue;
         }
+        pass_flag = false;
         // write markdown
-        // open crash_input
+        report_str += "<details><summary>";
+        report_str += keywords[i];
+        report_str += "</summary>";
+
+        // open crash_log and write to report_str
+        if (file_content_to_report(crash_log, report_str, st1) == 1) {
+            return "Failed filecontent to string";
+        }
+
+        report_str += "</details>";
+    }
+    // write "Crash"
+    report_str += "</details>";
+
+
+    // write "Incorrect"
+    report_str += "<details><summary><strong>Incorrect</strong></summary>";
+    // check incorrect log files and write md
+    for (i = 0; i < 3; i++) {
+        sprintf(sol_log, "submissions/%d/report/log/incorrect/sol_log_%d", student_id, i);
+        sprintf(sub_log, "submissions/%d/report/log/incorrect/sub_log_%d", student_id, i);
+        if (stat(sol_log, &st1) == -1 && stat(sub_log, &st2) == -1) {
+            continue;
+        }
+        stat(sub_log, &st2);
+        pass_flag = false;
+
         // write markdown
-        // open crash_output
-    }
+        report_str += "<details><summary>";
+        report_str += "solution_log_" + to_string(i+1);
+        report_str += "</summary>";
+        // open sol_log and write to report_str
+        if (file_content_to_report(sol_log, report_str, st1) == 1) {
+            return "Failed file content to string";
+        }
+        report_str += "</details>";
 
-    // check infinite loop of crash case
-    sprintf(crash_input, "submissions/%/report/crash_input_-1");
-    if (stat(crash_input, &st1) == 0) {
-        // write markdown of infinite loop
+        // write markdown
+        report_str += "<details><summary>";
+        report_str += "submission_log_" + to_string(i+1);
+        report_str += "</summary>";
+        // open sub_log and write to report_str
+        if (file_content_to_report(sub_log, report_str, st2) == 1) {
+            return "Failed file content to string";
+        }
+        report_str += "</details>";
     }
+    // write "Incorrect"
+    report_str += "</details>";
 
-    return 0;
+    // write grading info
+
+    return report_str;
 }
 
 
 
 // return 1 on failure, 0 on success
-int create_report() {
+string create_report() {
 
-    // define report_name
-    char report_name[128];
-    sprintf(report_name, "submissions/%s/report/%s_report.md", student_id, student_id);
+    // define report_str
+    string report_str;
+    string error = "ERROR";
 
-    // make report file
-    int report_fd;
-    if ((report_fd = open(report_name, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0) {
-        return 1;   //on failure return 1
-    }
+    write_report(report_str);
 
-
+    return report_str;
 }
 
 

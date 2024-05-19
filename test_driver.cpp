@@ -105,8 +105,6 @@ int main(int argc, char * argv[]) {
                 sprintf(log_buf, "stack Pushed\n");
                 write_log(fd, log_buf);
                 
-                
-
                 // check struct 
                 if ((rep_ok(before_size, stack_size(stack), 0)) == 1) {
                     fprintf(stderr, "push rep_ok failed\n");

@@ -82,6 +82,8 @@ fz_submission:
 # make report folder to save raw report
 	mkdir -p submissions/$(SID)/report/crash	
 	mkdir -p submissions/$(SID)/report/incorrect
+	mkdir -p submissions/$(SID)/report/log/crash	
+	mkdir -p submissions/$(SID)/report/log/incorrect
 # make outputs folder to save fuzz results
 	mkdir -p submissions/$(SID)/outputs	
 	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs submissions/$(SID)/submission.out 
