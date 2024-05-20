@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 start_time        : 1716117174
 last_update       : 1716117183
 run_time          : 8
@@ -30,12 +31,51 @@ slowest_exec_ms   : 0
 peak_rss_mb       : 7
 cpu_affinity      : -1
 edges_found       : 70
+=======
+start_time        : 1716098713
+last_update       : 1716098722
+run_time          : 8
+fuzzer_pid        : 8374
+cycles_done       : 0
+cycles_wo_finds   : 0
+time_wo_finds     : 5
+execs_done        : 3962
+execs_per_sec     : 444.72
+execs_ps_last_min : 0.00
+corpus_count      : 33
+corpus_favored    : 7
+corpus_found      : 32
+corpus_imported   : 0
+corpus_variable   : 0
+max_depth         : 3
+cur_item          : 22
+pending_favs      : 0
+pending_total     : 25
+stability         : 100.00%
+bitmap_cvg        : 0.00%
+saved_crashes     : 0
+saved_hangs       : 0
+last_find         : 1716098716
+last_crash        : 0
+last_hang         : 0
+execs_since_crash : 3962
+exec_timeout      : 20
+slowest_exec_ms   : 0
+peak_rss_mb       : 4
+cpu_affinity      : -1
+edges_found       : 63
+>>>>>>> f4112b46b3cc4ed77e9560987aa740df0063c356
 total_edges       : 8388608
 var_byte_count    : 0
 havoc_expansion   : 0
 auto_dict_entries : 0
+<<<<<<< HEAD
 testcache_size    : 707
 testcache_count   : 40
+=======
+testcache_size    : 734
+testcache_count   : 33
+>>>>>>> f4112b46b3cc4ed77e9560987aa740df0063c356
 testcache_evict   : 0
 afl_banner        : ./solution.out
 afl_version       : ++4.10a

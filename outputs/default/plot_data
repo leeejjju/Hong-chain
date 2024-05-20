@@ -1,2 +1,6 @@
 # relative_time, cycles_done, cur_item, corpus_count, pending_total, pending_favs, map_size, saved_crashes, saved_hangs, max_depth, execs_per_sec, total_execs, edges_found
+<<<<<<< HEAD
 8, 0, 34, 40, 32, 0, 0.00%, 5, 0, 3, 396.43, 3385, 70
+=======
+8, 0, 22, 33, 25, 0, 0.00%, 0, 0, 3, 442.71, 3962, 63
+>>>>>>> f4112b46b3cc4ed77e9560987aa740df0063c356
