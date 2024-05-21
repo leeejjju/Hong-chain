@@ -11,11 +11,7 @@ else
 fi 
 
 # solution fuzzing
-make fz_solution || true
-
-sleep 1s
-
-rm -rf .log/*
+make fz_solution 
 
 # provide the verification reporst of the solution to the instructor
 make check_for_crashes

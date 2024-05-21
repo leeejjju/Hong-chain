@@ -52,7 +52,8 @@ endif
 # how to use: make fz_solution 
 fz_solution: 
 	mkdir -p outputs
-	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out 
+	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out || true
+	rm -rf .log/*
 
 
 
@@ -72,7 +73,7 @@ fz_submission:
 # make outputs folder to save fuzz results
 # exit status code 124 from the timeout command indicates that the command terminated due to a timeout
 	mkdir -p submissions/$(SID)/outputs 
-	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs ./submissions/$(SID)/submission.out
+	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs ./submissions/$(SID)/submission.out || true
 	rm -rf .log/*
 
 
