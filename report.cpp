@@ -194,18 +194,22 @@ string register_issue(string lib_name = "" ) {
     if (file_content_to_report("outputs/report", register_report) == 1) {
         return "Read register_issue report failed\n";
     }
+    register_report += "<p>";
+    if (file_content_to_report("outputs/ok/acc_result", register_report) == 1) {
+        return "Read register_issue report failed\n";
+    }
 
     return register_report;
 }
 
 
 int main() {
-    cout << create_report(22000111);
+    // cout << create_report(22000111);
     // cout << endl<< endl;
-    cout << finish();
+    // cout << finish();
     // cout << endl;
 
-    // cout << register_issue();
+    cout << register_issue();
 }
 
 

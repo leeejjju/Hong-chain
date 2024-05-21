@@ -1,6 +1,7 @@
 No crashes detected
 YOU CAN USE DAEMON!!
 
-execs_done        : 3999
+execs_done        : 4031
 saved_crashes     : 0
-saved_hangs       : 0
+saved_hangs       : 0 	
+average_time      : 2.20 milliseconds per execution

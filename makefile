@@ -17,7 +17,11 @@ check_for_crashes:
 	fi
 	@echo "\nexecs_done        : `grep -Po 'execs_done\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report; \
 	echo "saved_crashes     : `grep -Po 'saved_crashes\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report; \
-	echo "saved_hangs       : `grep -Po 'saved_hangs\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report
+	echo "saved_hangs       : `grep -Po 'saved_hangs\s*:\s*\K\d+' outputs/default/fuzzer_stats`" >> outputs/report \	
+	avg_time=$$(grep -Po 'execs_per_sec\s*:\s*\K[\d.]+' outputs/default/fuzzer_stats); \
+	avg_time=`echo "scale=2; 1000/$$avg_time" | bc`; \
+	echo "average_time      : $$avg_time milliseconds per execution" >> outputs/report
+	
 
 
 # create subdirectory of students
