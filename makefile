@@ -51,18 +51,19 @@ endif
 # solution file fuzzing
 # how to use: make fz_solution 
 fz_solution: 
-	mkdir -p outputs/ok
-# Create temp_result, acc_result file and remove its content if it exists
-	echo "" > outputs/ok/temp_result
+	mkdir -p outputs/ok/temp
+# If files exist in the outputs/ok/temp, delete them
+	rm -rf outputs/ok/temp/*
+# Create acc_result file and remove its content if it exists
 	echo "" > outputs/ok/acc_result
 	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out 1 0 || true
+	./outputs/ok/cal.sh
 
 
 
 # submission file fuzzing
 # how to use : make fz_submission SID=22000711
-
-z_submission: 
+fz_submission: 
 # make report folder to save raw report
 	mkdir -p submissions/$(SID)/report/crash    
 	mkdir -p submissions/$(SID)/report/incorrect
@@ -80,7 +81,8 @@ z_submission:
 
 
 clean:
-	rm -rf outputs
+	rm -rf outputs/default
+	rm -rf outputs/ok/temp
 	rm -f *.out
 
 

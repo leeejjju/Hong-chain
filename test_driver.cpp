@@ -103,9 +103,9 @@ int write_ok_report(int solution_report_mode, int ok_fd, int total_input, int to
         }
         written_acc += written;
     }
-
-    // execute cal.sh
-    // system("./outputs/ok/cal.sh");
+    
+    // why...?
+    write(ok_fd, " ", 2);
 
     close (ok_fd);
 
@@ -151,8 +151,9 @@ int main(int argc, char * argv[]) {
 
     /* for saving input_ok, rep_ok return value */
     if (solution_report_mode == 1) {
-        sprintf(ok_file, "outputs/ok/temp_result");
-        ok_fd = open(ok_file, O_WRONLY, 0644);
+        pid_t pid2 = getpid();
+        sprintf(ok_file, "outputs/ok/temp/ok_%d", pid2);
+        ok_fd = open(ok_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         if (ok_fd == -1) {
             exit(EXIT_FAILURE);
         }
