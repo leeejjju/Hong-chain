@@ -131,6 +131,8 @@ string write_report(int student_id, string& report_str) {
 
 
 // return 1 on failure, 0 on success
+// return a report content as a string which is based on the files inside the submissions/$(sid)/report/log directory
+// Save pass/fail information as existence of submissions/$(sid)/pass or fail directory
 string create_report(int student_id) {
 
     // define report_str
@@ -179,15 +181,15 @@ string finish() {
 }
 
 
-string register_issue(string lib_path = "", string lib_name = "" ) {
+string register_issue(string lib_name = "" ) {
 
-    string cmd = string("./build.sh ") + lib_path + lib_name;
+    string cmd = string("./build.sh ") + lib_name;
     const char * cmd_str = cmd.c_str();
     system(cmd_str);
 
     string register_report;
 
-    register_report += "## Assignment Report\n";
+    register_report = "## REGISTER Report\n";
 
     if (file_content_to_report("outputs/report", register_report) == 1) {
         return "Read register_issue report failed\n";
@@ -198,9 +200,10 @@ string register_issue(string lib_path = "", string lib_name = "" ) {
 
 
 int main() {
-    // cout << create_report(22000111);
+    // cout << create_report(22000711);
     // cout << endl<< endl;
     cout << finish();
+    cout << "here";
     // cout << endl;
 
     // cout << register_issue();
