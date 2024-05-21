@@ -1,0 +1,16 @@
+20 
+20 40 
+Node with value 20 already exists in the tree.
+20 40 
+20 2147483647 
+20 99 
+2 20 99 
+Node with value 2 already exists in the tree.
+2 20 99 
+Not found
+Not found
+Not found
+Not found
+2 3 20 99 
+2 30 20 2 30 
+2 40 20 2 40 
