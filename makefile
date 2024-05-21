@@ -51,15 +51,18 @@ endif
 # solution file fuzzing
 # how to use: make fz_solution 
 fz_solution: 
-	mkdir -p outputs
-	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out || true
-	rm -rf .log/*
+	mkdir -p outputs/ok
+# Create temp_result, acc_result file and remove its content if it exists
+	echo "" > outputs/ok/temp_result
+	echo "" > outputs/ok/acc_result
+	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o outputs ./solution.out 1 0 || true
 
 
 
 # submission file fuzzing
 # how to use : make fz_submission SID=22000711
-fz_submission: 
+
+z_submission: 
 # make report folder to save raw report
 	mkdir -p submissions/$(SID)/report/crash    
 	mkdir -p submissions/$(SID)/report/incorrect
@@ -73,8 +76,7 @@ fz_submission:
 # make outputs folder to save fuzz results
 # exit status code 124 from the timeout command indicates that the command terminated due to a timeout
 	mkdir -p submissions/$(SID)/outputs 
-	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs ./submissions/$(SID)/submission.out || true
-	rm -rf .log/*
+	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs ./submissions/$(SID)/submission.out 0 0 || true
 
 
 clean:

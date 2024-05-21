@@ -1,6 +1,6 @@
 Command line used to find this crash:
 
-AFLplusplus/afl-fuzz -i inputs -o submissions/22000711/outputs ./submissions/22000711/submission.out
+AFLplusplus/afl-fuzz -i inputs -o submissions/22000711/outputs ./submissions/22000711/submission.out 0 0
 
 If you can't reproduce a bug outside of afl-fuzz, be sure to set the same
 memory limit. The limit used for this fuzzing session was 0 B.

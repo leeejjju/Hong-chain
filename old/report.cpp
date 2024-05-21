@@ -202,7 +202,7 @@ string register_issue(string lib_name = "" ) {
 int main() {
     // cout << create_report(22000711);
     // cout << endl<< endl;
-    cout << finish();
+    // cout << finish();
     cout << "here";
     // cout << endl;
 
