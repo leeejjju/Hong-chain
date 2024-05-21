@@ -31,9 +31,9 @@ create_subdir:
 solution:
 	mkdir -p .log
 ifeq ($(LIB_NAME),) # LIB_NAME is empty
-    AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I./include -o solution.out
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I./include -o solution.out
 else    
-    AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution.out
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution.out
 endif
 
 
@@ -42,9 +42,9 @@ endif
 submission:
 	mkdir -p .log
 ifeq ($(LIB_NAME),) # LIB_NAME is empty
-    AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp  submissions/$(SID)/submission.cpp -I./include -o submissions/$(SID)/submission.out
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp  submissions/$(SID)/submission.cpp -I./include -o submissions/$(SID)/submission.out
 else    
-    AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submissions/$(SID)/submission.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submissions/$(SID)/submission.out
+	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submissions/$(SID)/submission.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submissions/$(SID)/submission.out
 endif
 
 

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # read variables value (INCLUDE_PATH, LIB_PATH, LIB_NAME)
 LIB_NAME=$1
 
