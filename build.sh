@@ -4,7 +4,7 @@
 LIB_NAME=$1
 
 # make solution execution file
-if [-n "$LIB_NAME" ]; then   # LIB_NAME is defined
+if [ -n "$LIB_NAME" ]; then   # LIB_NAME is defined
     make solution LIB_NAME="$LIB_NAME"
 else
     make solution 

@@ -1,9 +1,9 @@
-total_input : 11151
-input_pass : 9492
-input_fail : 1659
-input_pass_percentage : 85.1224%
+total_input : 12483
+input_pass : 10368
+input_fail : 2115
+input_pass_percentage : 83.057%
 
-total_rep : 18206
-rep_pass : 18206
+total_rep : 17567
+rep_pass : 17567
 rep_fail : 0
 rep_pass_percentage : 100%

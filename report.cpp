@@ -20,8 +20,8 @@ using namespace std;
 
 char keywords[9][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks", "infinite loop"};
 
-int crash_cnt = 0;
-int incorrect_cnt = 0;
+// int crash_cnt = 0;
+// int incorrect_cnt = 0;
 
 
 // return 1 on failure, 0 on success
@@ -204,12 +204,12 @@ string register_issue(string lib_name = "" ) {
 
 
 int main() {
-    // cout << create_report(22000111);
+    // cout << create_report(22000711);
     // cout << endl<< endl;
-    // cout << finish();
+    cout << finish();
     // cout << endl;
 
-    cout << register_issue();
+    // cout << register_issue();
 }
 
 
