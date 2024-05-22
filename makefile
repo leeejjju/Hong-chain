@@ -30,12 +30,6 @@ check_for_crashes:
 	
 
 
-# create subdirectory of students
-# how to use: make create_subdir SID=22000711
-create_subdir:
-	mkdir -p submissions/$(SID)
-
-
 # make solution execution file, LIB_NAME is optional
 # how to use: make solution LIB_NAME=libnowic_db.a 
 solution:

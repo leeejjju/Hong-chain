@@ -20,9 +20,6 @@ using namespace std;
 
 char keywords[9][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks", "infinite loop"};
 
-// int crash_cnt = 0;
-// int incorrect_cnt = 0;
-
 
 // return 1 on failure, 0 on success
 int file_content_to_report(const char * filename, string& report_str) {
@@ -43,7 +40,7 @@ int file_content_to_report(const char * filename, string& report_str) {
 
 
 // return 1 on failure, 0 on success
-string write_report(int student_id, string& report_str) {
+string write_report(int student_id, string& report_str, int total_exec, int total_crash, int total_incorrect) {
     char crash_log[128];
     char sub_log[128];
     char sol_log[128];
@@ -52,15 +49,21 @@ string write_report(int student_id, string& report_str) {
     struct stat st1, st2;
     bool pass_flag = true;
 
+    // write grading info
+    report_str += "## Summary\n";
+    report_str += "total_execution: " + to_string(total_exec) + "<br>";
+    report_str += "total_crash: " + to_string(total_crash) + "<br>";
+    report_str += "total_incorrect: " + to_string(total_incorrect) + "<br>";
+
+
     // write "Crash"
-    report_str += "## Crash\n";
+    report_str += "\n## Crash\n";
     // check crash log files and write md
     for (i = 0; i < 9; i++) {
         sprintf(crash_log, "submissions/%d/report/log/crash/crash_log_%d", student_id, i);
         if (stat(crash_log, &st1) == -1) {
             continue;
         }
-        pass_flag = false;
         // write markdown
         report_str += "<details><summary>";
         report_str += keywords[i];
@@ -85,7 +88,6 @@ string write_report(int student_id, string& report_str) {
             continue;
         }
         stat(sub_log, &st2);
-        pass_flag = false;
 
         // write markdown
         report_str += "<details><summary>";
@@ -108,12 +110,17 @@ string write_report(int student_id, string& report_str) {
         report_str += "</details>";
     }
 
-    // write grading info
+
+
+    // determine pass/fail
+    if (total_crash > 0 || total_incorrect > 0) {
+        pass_flag = false;
+    }
 
     // write pass/faile
     report_str = (pass_flag ? "# PASS\n" : "# FAIL\n") + report_str;
 
-    // recore the pass/fail to directory for instructor
+    // record the pass/fail to directory for instructor
     char prev_file[128];
     string grade = pass_flag ? "pass" : "fail";
     sprintf(prev_file, "submissions/%d/pass", student_id);
@@ -130,16 +137,16 @@ string write_report(int student_id, string& report_str) {
 
 
 
-// return 1 on failure, 0 on success
 // return a report content as a string which is based on the files inside the submissions/$(sid)/report/log directory
 // Save pass/fail information as existence of submissions/$(sid)/pass or fail directory
-string create_report(int student_id) {
+string create_report(int student_id, int total_exec, int total_crash, int total_incorrect) {
 
     // define report_str
-    string report_str;
+    string report_str; 
     string error = "ERROR";
 
-    write_report(student_id, report_str);
+    write_report(student_id, report_str, total_exec, total_crash, total_incorrect);
+
 
     return report_str;
 }
@@ -204,7 +211,7 @@ string register_issue(string lib_name = "" ) {
 
 
 // int main() {
-//     // cout << create_report(22000711);
+//     // cout << create_report(22000711, 4, 2, 2);
 //     // cout << endl<< endl;
 //     cout << finish();
 //     // cout << endl;

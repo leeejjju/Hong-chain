@@ -125,8 +125,7 @@ void *handle_clnt(void * arg) {
 
 		printf("SUBMISSION: %d\n", s_id);
 		//make subdirectory under submissions/
-		char cmd[1024] = "mkdir -p submissions";
-		system(cmd);
+		char cmd[1024];
 		sprintf(cmd, "mkdir -p submissions/%d", s_id);
 		system(cmd);
 
@@ -146,9 +145,6 @@ void *handle_clnt(void * arg) {
 
 void register_routine(string repo_owner, string repo_name){
 
-		//build and test? solution
-
-		//write report
 
 		//make issue
 		string github_token;
@@ -178,8 +174,13 @@ void finish_routine(string repo_owner, string repo_name){
 		string github_token;
 		cout << "token: ";
 		cin >> github_token;
-		string title = "This is test title. for your FINISH request :) ";
-		string report = "# Test body \n\n --- hello world<br> ";
+
+
+		string title = "FINISH report";
+		string report = finish();
+
+
+
 		create_github_issue(title, report, repo_owner, repo_name, github_token);
 
 
@@ -194,16 +195,19 @@ void submission_routine(int s_id, string repo_owner, string repo_name){
 		//compare and grading
 
 
-		//write report
-
-
-
 		//make issue
 		string github_token;
 		cout << "token: ";
 		cin >> github_token;
-		string title = "This is test title. for your SUBMIT :) ";
-		string report = "# Test body \n\n --- hello world<br> ";
+
+
+		string title = "SUBMIT report";
+		string report;
+
+		//write report
+		report = create_report(s_id, 4, 2, 2);
+
+
 		create_github_issue(title, report, repo_owner, repo_name, github_token);
 
 

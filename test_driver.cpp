@@ -149,6 +149,7 @@ int main(int argc, char * argv[]) {
     }
     /* for log */
 
+
     /* for saving input_ok, rep_ok return value */
     if (solution_report_mode == 1) {
         pid_t pid2 = getpid();
