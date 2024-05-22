@@ -1,5 +1,11 @@
-CC=AFLplusplus/afl-clang++
-FZ=AFLplusplus/afl-fuzz
+CC1 = AFLplusplus/afl-clang++
+CC2 = g++
+FZ = AFLplusplus/afl-fuzz
+
+IP = 127.0.0.1
+PORT = 9090
+CFLAGS = -pthread -I/usr/include/jsoncpp -lcurl -ljsoncpp
+
 
 
 # variables
@@ -35,9 +41,9 @@ create_subdir:
 solution:
 	mkdir -p .log
 ifeq ($(LIB_NAME),) # LIB_NAME is empty
-	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I./include -o solution.out
+	AFL_USE_ASAN=1 $(CC1) -std=c++11 test_driver.cpp solution.cpp -I./include -o solution.out
 else    
-	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp solution.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution.out
+	AFL_USE_ASAN=1 $(CC1) -std=c++11 test_driver.cpp solution.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o solution.out
 endif
 
 
@@ -46,9 +52,9 @@ endif
 submission:
 	mkdir -p .log
 ifeq ($(LIB_NAME),) # LIB_NAME is empty
-	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp  submissions/$(SID)/submission.cpp -I./include -o submissions/$(SID)/submission.out
+	AFL_USE_ASAN=1 $(CC1) -std=c++11 test_driver.cpp  submissions/$(SID)/submission.cpp -I./include -o submissions/$(SID)/submission.out
 else    
-	AFL_USE_ASAN=1 $(CC) -std=c++11 test_driver.cpp submissions/$(SID)/submission.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submissions/$(SID)/submission.out
+	AFL_USE_ASAN=1 $(CC1) -std=c++11 test_driver.cpp submissions/$(SID)/submission.cpp -I./include -L./lib -l$(patsubst lib%.a,%,$(LIB_NAME)) -o submissions/$(SID)/submission.out
 endif
 
 
@@ -84,9 +90,20 @@ fz_submission:
 	timeout 10s env AFL_NO_AFFINITY=1 $(FZ) -i inputs -o submissions/$(SID)/outputs ./submissions/$(SID)/submission.out 0 0 || true
 
 
+
+demon.out: demon.cpp
+	$(CC2) $^ -o $@ $(CFLAGS) 
+
+rs: demon.out
+	./$^ $(PORT)
+
+
 clean:
 	rm -rf outputs/default
 	rm -rf outputs/ok/temp
+	rm -rf submissions
+	rm -f solution.cpp
+	rm -f test_driver.cpp
 	rm -f *.out
 
 

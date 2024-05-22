@@ -17,8 +17,9 @@
 #include <iostream>
 using namespace std;
 
-#include "lib/issue/issue.cpp"
-#include "lib/util/util.cpp"
+#include "lib_piece/issue/issue.cpp"
+#include "lib_piece/util/util.cpp"
+#include "report.cpp"
 
 #define BUF_SIZE 1024
 #define NEW_PORT_BASE 5000
@@ -153,8 +154,14 @@ void register_routine(string repo_owner, string repo_name){
 		string github_token;
 		cout << "token: ";
 		cin >> github_token;
-		string title = "This is test title. for your REGISTER :) ";
-		string report = "# Test body \n\n --- hello world<br> ";
+
+
+		string title = "REGISTER report";
+		string report;
+
+		report = register_issue();
+
+		
 		create_github_issue(title, report, repo_owner, repo_name, github_token);
 
 
