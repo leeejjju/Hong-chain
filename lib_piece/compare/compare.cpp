@@ -30,121 +30,127 @@ void timeout_handler(int signum)
 //return 1 on failure, 0 on success. plz pass the opend file descriptor. 
 int save_crash(int student_id, char* input_filepath, FILE* output_fp){
 
-	char filename[128];
-	ssize_t len, read_len, written_len;
+    char filename[128];
+    ssize_t len, read_len, written_len;
 
-	//save input by execute cmd
-	char cmd[1024];
+    //save input by execute cmd
+    char cmd[1024];
 
-	len = sprintf(filename, "crash_input_%03d", crash_cnt);
-	filename[len] = 0;
-	sprintf(cmd, "cp %s submissions/%d/report/crash/%s", input_filepath, student_id, filename);
-	cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
+    len = sprintf(filename, "crash_input_%03d", crash_cnt);
+    filename[len] = 0;
+    sprintf(cmd, "cp %s submissions/%d/report/crash/%s", input_filepath, student_id, filename);
+    cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
     if (system(cmd)) return 1; //on failure return 1
 
 
-	//save output by fileIO
-	char filepath[1024];
-	char buffer[1024];
-	FILE* fp = 0;
+    //save output by fileIO
+    char filepath[1024];
+    char buffer[1024];
+    FILE* fp = 0;
 
-	len = sprintf(filename, "crash_output_%03d", crash_cnt);
-	filename[len] = 0;
-	sprintf(filepath, "submissions/%d/report/crash/%s", student_id, filename);
-	cout << "filename: " << filename << endl << "path: " << filepath << endl;
+    len = sprintf(filename, "crash_output_%03d", crash_cnt);
+    filename[len] = 0;
+    sprintf(filepath, "submissions/%d/report/crash/%s", student_id, filename);
+    cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
     if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
     while (fgets(buffer, sizeof(buffer), output_fp) !=NULL) {
         fwrite(buffer,1,strlen(buffer), fp);
     }fclose(fp);
 
-	crash_cnt++;
-	return 0;
+    crash_cnt++;
+    return 0;
 
 }
 
 //return 1 on failure, 0 on success. plz pass the opend file descriptor.
-int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_fp){
+int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_fp,int pid){
 
-	char filename[128];
-	ssize_t len, read_len, written_len;
+    char filename[128];
+    ssize_t len, read_len, written_len;
 
-	//save input by execute cmd
-	char cmd[1024];
+    //save input by execute cmd
+    char cmd[1024];
 
-	len = sprintf(filename, "input_%03d", incorrect_cnt);
-	filename[len] = 0;
-	sprintf(cmd, "cp %s submissions/%d/report/incorrect/%s", input_filepath, student_id, filename);
-	// cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
+    // len = sprintf(filename, "log_%03d", incorrect_cnt);
+    // filename[len] = 0;
+    // sprintf(cmd, "cp %s submissions/%d/report/incorrect/%s", input_filepath, student_id, filename);
+    // // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
+    // if (system(cmd)) return 1; //on failure return 1
+
+    len = sprintf(filename, "input_%03d", incorrect_cnt);
+    filename[len] = 0;
+    sprintf(cmd, "cp %s submissions/%d/report/incorrect/%s", input_filepath, student_id, filename);
+    // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
     if (system(cmd)) return 1; //on failure return 1
 
-	//save outputs by fileIO
-	char filepath[1024];
-	char buffer[1024];
-	FILE * fp = NULL;
+    //save outputs by fileIO
+    char filepath[1024];
+    char buffer[1024];
+    FILE * fp = NULL;
 
-	len = sprintf(filename, "sol_output_%03d", incorrect_cnt);
-	filename[len] = 0;
-	len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
-	filepath[len] = 0;
-	// cout << "filename: " << filename << endl << "path: " << filepath << endl;
+    len = sprintf(filename, "sol_output_%03d", incorrect_cnt);
+    filename[len] = 0;
+    len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
+    filepath[len] = 0;
+    // cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
     if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
     while (fgets(buffer, sizeof(buffer), sol_fp) !=NULL) {
         fwrite(buffer,1,strlen(buffer), fp);
     }fclose(fp);
 
-	len = sprintf(filename, "sub_output_%03d", incorrect_cnt);
-	filename[len] = 0;
-	len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
-	filepath[len] = 0;
-	// cout << "filename: " << filename << endl << "path: " << filepath << endl;
+    len = sprintf(filename, "sub_output_%03d", incorrect_cnt);
+    filename[len] = 0;
+    len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
+    filepath[len] = 0;
+    // cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
-	if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
+    if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
     while (fgets(buffer, sizeof(buffer), sub_fp) !=NULL) {
         fwrite(buffer,1,strlen(buffer), fp);
     }fclose(fp);
 
-	incorrect_cnt++;
-	return 0;
+    incorrect_cnt++;
+    return 0;
 
 }
 
 //return 1 if they are same, return 0 if not the same. pass the &index to save index of submission crash.
 int are_they_same(int sol_fd, int sub_fd, int* index){
 
-	// https://github.com/google/sanitizers/wiki/AddressSanitizer
-	char keywords[8][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks" };
-	int sol_idx = -1, sub_idx = -1;
-	char buffer[512]; //TODO if sanitizer is only one in stderr, the keyword surely in first 512 texts. but are there other cases? 
-	int len;
+    // https://github.com/google/sanitizers/wiki/AddressSanitizer
+    char keywords[8][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks" };
+    int sol_idx = -1, sub_idx = -1;
+    char buffer[512]; //TODO if sanitizer is only one in stderr, the keyword surely in first 512 texts. but are there other cases? 
+    int len;
 
-	len = read(sol_fd, buffer, sizeof(buffer));	
-	buffer[len] = 0; 
-	for(int i = 0; i < 8; i++){
-		if(strstr(buffer, keywords[i]) != nullptr){
-			sol_idx = i;
-			break;
-		}
-	}
+    len = read(sol_fd, buffer, sizeof(buffer)); 
+    buffer[len] = 0; 
+    for(int i = 0; i < 8; i++){
+        if(strstr(buffer, keywords[i]) != nullptr){
+            sol_idx = i;
+            break;
+        }
+    }
 
-	len = read(sub_fd, buffer, sizeof(buffer));	
-	buffer[len] = 0; 
-	for(int i = 0; i < 8; i++){
-		if(strstr(buffer, keywords[i]) != nullptr){
-			sub_idx = i;
-			break;
-		}
-	}
+    len = read(sub_fd, buffer, sizeof(buffer)); 
+    buffer[len] = 0; 
+    for(int i = 0; i < 8; i++){
+        if(strstr(buffer, keywords[i]) != nullptr){
+            sub_idx = i;
+            break;
+        }
+    }
 
-	*index = sub_idx;
-	if(sol_idx != -1 && sol_idx == sub_idx) return 1; //if same
-	else return 0; // if not
+    *index = sub_idx;
+    if(sol_idx != -1 && sol_idx == sub_idx) return 1; //if same
+    else return 0; // if not
 
 }
 
 //return 1 somthing error
-int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path){
+int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path,int * totall_cnt, int * crash_cnt, int * incorrect_cnt){
     DIR * dir = opendir(input_dir_path) ;
     if(dir == NULL)
     {
@@ -177,6 +183,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
         if (!S_ISLNK(st.st_mode) && S_ISREG(st.st_mode))
         {
             
+            (*totall_cnt)+=1;
             //exec solution
             int sol_pid = fork();
 
@@ -207,7 +214,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     return 1;
                 }
 
-                char *args[] = {sol_exec_path, NULL};
+                char *args[] = {sol_exec_path, "0", "1",NULL};
                 alarm(3);
 
                 if(execv(sol_exec_path,args))                                 
@@ -247,7 +254,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                     perror("dup2");
                     return 1;
                 }
-                char *args[] = {sub_exec_path, NULL}; 
+                char *args[] = {sub_exec_path, "0", "1",NULL}; 
                 alarm(3);
                 if(execv(sub_exec_path,args))                                 
                 {                                                             
@@ -270,14 +277,15 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
             // 자식 프로세스가 정상 종료되었는지 확인
                 printf("sub exited with status %d\n", WEXITSTATUS(sub_status));
                 printf("%s\n",input_file_path);
-
+                printf("signaled %d\n",WIFSIGNALED(sub_status));
+                
             } 
             if (WIFSIGNALED(sub_status)) {
                 // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
                 if(WIFEXITED(sol_status) || (WIFSIGNALED(sol_status) && (WTERMSIG(sub_status) != WTERMSIG(sol_status))) )
                 {
                     //Todo checking timeout using SIGTERM
-                    // printf("aldfjlajdf;ljal;dfjlkajdfl;jalk\n");
+                    (*crash_cnt)++;
                     save_crash(student_id, input_file_path, sub_stderr); 
                         // printf("call save_crash_routin\n");
                     free(input_file_path) ;                                                     
@@ -308,6 +316,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                 fgets(sol_buff,sizeof(sol_buff), sol_stdout);
                 if(strcmp(sol_buff,sub_buff)!=0)
                 {
+                    (*incorrect_cnt)++;
                     rewind(sol_stdout);
                     rewind(sub_stdout);
                     //TODO change incorrect_cnt to student_id
@@ -331,12 +340,17 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
     closedir(dir);  
     return 0;                                                          
 }                                                                             
-int main()                                                                    
-{    
-    signal(SIGALRM, timeout_handler);
-    // exec_input("./solution","./submission_bst1","solution_fuzz_output/default/queue");
-    // exec_input("./solution","./submission_bst3","solution_fuzz_output/default/queue");
-
-    exec_input("./testcopy","./test","Testinput");
-}                                                                             
+// int main()                                                                    
+// {    
+//     signal(SIGALRM, timeout_handler);
+    
+//     int totall_cnt=0;
+//     int crash_cnt=0;
+//     int incorrect_cnt=0;
+//     // exec_input("./solution_bst.out","./submission_bst1.out","solution_fuzz_output/default/queue");
+//     // exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &totall_cnt, &crash_cnt, &incorrect_cnt);
+//     exec_input("./testcopy.out","./test.out","Testinput", &totall_cnt, &crash_cnt, &incorrect_cnt);
+//     printf("totall: %d crash: %d incorrect: %d\n",totall_cnt,crash_cnt,incorrect_cnt);
+// }                                                                             
                               
+

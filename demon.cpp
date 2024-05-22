@@ -20,6 +20,7 @@ using namespace std;
 #include "lib_piece/issue/issue.cpp"
 #include "lib_piece/util/util.cpp"
 #include "report.cpp"
+#include "lib_piece/compare/compare.cpp"
 
 #define BUF_SIZE 1024
 #define NEW_PORT_BASE 5000
@@ -188,11 +189,25 @@ void finish_routine(string repo_owner, string repo_name){
 }
 
 void submission_routine(int s_id, string repo_owner, string repo_name){
-
+		ssize_t len;
+    	char cmd[1024];
 		//build
-
+		// make submission SID=22000711
+    	sprintf(cmd, "make submission SID=%d",s_id );
+    	if (system(cmd)) 
+		{
+			//TODO SEND ISSUE WITH BUILD ERROR MESSAGE
+			return; //on failure return 1
+		}
+		//fuzz
+		// make fz_submission SID=22000711
+		sprintf(cmd, "make fz_submission SID=%d",s_id );
+    	if (system(cmd)) return; //on failure return 1
 
 		//compare and grading
+		int total_cnt, incorrect_cnt, crash_cnt;
+		sprintf(cmd, "submissions/%d/submission.out",s_id );
+		exec_input("./solution.out",cmd,"outputs/default/queue", &totall_cnt, &crash_cnt, &incorrect_cnt);
 
 
 		//make issue
@@ -205,7 +220,7 @@ void submission_routine(int s_id, string repo_owner, string repo_name){
 		string report;
 
 		//write report
-		report = create_report(s_id, 4, 2, 2);
+		report = create_report(s_id, total_cnt, crash_cnt, incorrect_cnt);
 
 
 		create_github_issue(title, report, repo_owner, repo_name, github_token);
