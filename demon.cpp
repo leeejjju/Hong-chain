@@ -207,7 +207,7 @@ void submission_routine(int s_id, string repo_owner, string repo_name){
 		//compare and grading
 		int total_cnt, incorrect_cnt, crash_cnt;
 		sprintf(cmd, "submissions/%d/submission.out",s_id );
-		exec_input("./solution.out",cmd,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt);
+		exec_input("./solution.out",cmd,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id);
 
 
 		//make issue
