@@ -411,18 +411,18 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
     closedir(dir);  
     return 0;                                                          
 }                                                                             
-int main()                                                                    
-{    
-    signal(SIGALRM, timeout_handler);
+// int main()                                                                    
+// {    
+//     signal(SIGALRM, timeout_handler);
     
-    int total_cnt=0;
-    int crash_cnt=0;
-    int incorrect_cnt=0;
-    int student_id = 0;
-    // exec_input("./solution_bst.out","./submission_bst1.out","solution_fuzz_output/default/queue");
-    // exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &totall_cnt, &crash_cnt, &incorrect_cnt);
-    exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
-    printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
-}                                                                             
+//     int total_cnt=0;
+//     int crash_cnt=0;
+//     int incorrect_cnt=0;
+//     int student_id = 0;
+//     // exec_input("./solution_bst.out","./submission_bst1.out","solution_fuzz_output/default/queue");
+//     // exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &totall_cnt, &crash_cnt, &incorrect_cnt);
+//     exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
+//     printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
+// }                                                                             
                               
 
