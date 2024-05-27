@@ -1,13 +1,16 @@
-20 
-4 20 
-4 20 1245 
-Node with value 20 already exists in the tree.
-4 20 1245 
-4 20 500 1245 
-4 20 50 500 1245 
-4 20 50 90 500 1245 
-1 4 20 50 90 500 1245 
-1 4 20 50 90 92 500 1245 
-1 2 4 20 50 90 92 500 1245 
-Found: 1
+0 
+0 2 
 Not found
+Node with value 0 already exists in the tree.
+0 2 
+0 
+0 
+0 1 
+0 
+0 1 
+0 1 2 
+Node with value 2 already exists in the tree.
+0 1 2 
+0 2 
+0 2 
+0 

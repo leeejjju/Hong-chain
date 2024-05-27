@@ -1,12 +1,23 @@
-
-
-40 
-20 40 
-20 40 50 
-20 40 50 90 
-20 40 50 90 99 
-2 20 40 50 90 99 
-2 20 40 50 99 
-2 3 20 40 50 99 
-Node with value 3 already exists in the tree.
-2 3 20 40 50 99 
+2090 
+1 2090 
+1 50 2090 
+0 1 50 2090 
+0 1 50 2090 
+0 1 40 50 2090 
+0 1 20 40 50 2090 
+0 1 8 20 40 50 2090 
+0 1 5 8 20 40 50 2090 
+0 5 8 20 40 50 2090 
+0 5 8 20 40 50 2090 2245 
+Node with value 0 already exists in the tree.
+0 5 8 20 40 50 2090 2245 
+Node with value 0 already exists in the tree.
+0 5 8 20 40 50 2090 2245 
+Node with value 0 already exists in the tree.
+0 5 8 20 40 50 2090 2245 
+Node with value 0 already exists in the tree.
+0 5 8 20 40 50 2090 2245 
+Node with value 0 already exists in the tree.
+0 5 8 20 40 50 2090 2245 
+Node with value 0 already exists in the tree.
+0 5 8 20 40 50 2090 2245 

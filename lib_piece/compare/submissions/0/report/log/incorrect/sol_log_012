@@ -1,0 +1,12 @@
+insert 20
+insert 0
+insert 1111111
+insert 1
+delete 0
+insert 0
+insert 40
+insert 90
+insert 124
+delete 1
+delete 9
+insert 0

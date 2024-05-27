@@ -1,6 +1,10 @@
-20 
-20 40 
-20 40 50 
-20 40 50 
-Not found
-Not found
+2 
+1 2 
+1 2 245 
+Node with value 1 already exists in the tree.
+1 2 245 
+1 2 245 
+1 2 3 245 
+1 2 3 31 245 
+1 2 3 31 240 245 
+1 2 3 31 240 245 

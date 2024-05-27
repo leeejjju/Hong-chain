@@ -1,12 +1,17 @@
 20 
-20 40 
-20 40 2090 
-2 20 40 2090 
+1 20 
+0 1 20 
+0 1 2 20 
+Not found
+Node with value 0 already exists in the tree.
+0 1 2 20 
+0 1 20 
+0 20 
+0 1 20 
+0 20 
+0 1 20 
+0 1 2 20 
 Node with value 2 already exists in the tree.
-2 20 40 2090 
-Node with value 2 already exists in the tree.
-2 20 40 2090 
-2 20 40 2090 
-2 20 40 2090 
-2 3 20 40 2090 
-2 3 20 40 2090 3330 
+0 1 2 20 
+0 2 20 
+0 2 20 

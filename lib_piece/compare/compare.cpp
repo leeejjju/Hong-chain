@@ -33,16 +33,24 @@ int save_crash(int student_id, char* input_filepath, FILE* output_fp, int sub_pi
     //save input by execute cmd
     char cmd[1024];
 
-    len = sprintf(filename, "crash_input_%03d", crash_cnt);
+    len = sprintf(filename, "crash_log_%03d", crash_cnt);
     filename[len] = 0;
     sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/crash/%s", sub_pid, student_id, filename);
-    if (system(cmd)) return 1; //on failure return 1
+    if (system(cmd)) 
+    {
+    // return 1; //on failure return 1
+
+    }
 
     len = sprintf(filename, "crash_input_%03d", crash_cnt);
     filename[len] = 0;
     sprintf(cmd, "cp %s submissions/%d/report/crash/%s", input_filepath, student_id, filename);
     cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
-    if (system(cmd)) return 1; //on failure return 1
+    if (system(cmd))
+    {
+    // return 1; //on failure return 1
+
+    }
 
 
     //save output by fileIO
@@ -78,13 +86,21 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
     filename[len] = 0;
     sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/incorrect/%s", sol_pid, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
-    if (system(cmd)) return 1; //on failure return 1
+    if (system(cmd)) 
+    {
+    // return 1; //on failure return 1
+
+    }
 
     len = sprintf(filename, "sub_log_%03d", incorrect_cnt);
     filename[len] = 0;
-    sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/incorrect/%s", sol_pid, student_id, filename);
+    sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/incorrect/%s", sub_pid, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
-    if (system(cmd)) return 1; //on failure return 1
+    if (system(cmd)) 
+    {
+    // return 1; //on failure return 1
+
+    }
 
     len = sprintf(filename, "input_%03d", incorrect_cnt);
     filename[len] = 0;
@@ -290,7 +306,7 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
             } 
             if (WIFSIGNALED(sub_status)) {
                 // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
-                if(WIFEXITED(sol_status) || (WIFSIGNALED(sol_status) && (WTERMSIG(sub_status) != WTERMSIG(sol_status))) )
+                if(WIFEXITED(sol_status) || WIFSIGNALED(sol_status) )
                 {
                     //Todo checking timeout using SIGTERM
                     save_crash(student_id, input_file_path, sub_stderr, sub_pid,*crash_cnt); 
@@ -356,8 +372,8 @@ int main()
     int incorrect_cnt=0;
     int student_id = 0;
     // exec_input("./solution_bst.out","./submission_bst1.out","solution_fuzz_output/default/queue");
-    // exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &totall_cnt, &crash_cnt, &incorrect_cnt);
-    exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
+    exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
+    // exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
     printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
 }                                                                             
                               

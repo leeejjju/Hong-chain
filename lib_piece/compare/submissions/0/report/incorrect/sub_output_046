@@ -1,13 +1,10 @@
-201 
-0 201 
-0 124 201 
-0 40 201 
-0 124 201 
-0 40 201 
-0 20 201 
-0 50 201 
-0 90 201 
-0 1245 201 0 1245 
-0 99 201 0 99 
-0 2 201 0 2 
-Found: 0
+1 
+Node with value 1 already exists in the tree.
+1 
+0 1 
+0 1 
+0 40 1 0 40 
+0 20 1 0 20 
+Node with value 1 already exists in the tree.
+0 20 1 0 20 
+0 5 1 0 5 

@@ -1,0 +1,14 @@
+insert 20
+insert 4
+insert 20
+insert 20
+insert 20
+insert 1
+delete 2
+delete 90
+insert 3
+delete 1
+delete 9
+insert 40
+insert 1
+search 1

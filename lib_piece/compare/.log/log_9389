@@ -1,0 +1,16 @@
+insert 30
+insert 40
+insert 2
+insert 0
+insert 1
+delete 1
+insert 2
+insert 2
+delete 0
+delete 2
+delete 90
+insert 3
+insert 1
+delete 1
+delete 92340
+search 3
