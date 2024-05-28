@@ -95,9 +95,10 @@ rs: demon.out
 clean:
 	rm -rf outputs/default
 	rm -rf outputs/ok/temp
-	rm -rf submissions
-	rm -f solution.cpp
-	rm -f test_driver.cpp
+	rm -rf outputs/ok/acc_result
+#	rm -rf submissions
+#	rm -f solution.cpp
+#	rm -f test_driver.cpp
 	rm -f *.out
 
 

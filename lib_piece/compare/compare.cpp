@@ -410,7 +410,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                                                                               
     closedir(dir);  
     return 0;                                                          
-}                                                                             
+} 
+                                                                            
 // int main()                                                                    
 // {    
 //     signal(SIGALRM, timeout_handler);
