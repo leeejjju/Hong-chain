@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <sstream>
 #include "db_stack.h"
-
 using namespace std;
 
 
@@ -20,101 +19,114 @@ int total_input = 0, total_rep = 0, input_pass = 0, input_fail = 0, rep_pass = 0
 void exit_routine(int state);
 int input_ok(char * ch);
 int rep_ok(int before_size, int after_size, int rep_mode);
-void write_log(char * log_buf);
 void print_stack(Node * p);
+void write_log(char * log_buf);
 int write_ok_report();
 
 
-// state 0 : input_ok failed, state 1 : rep_ok failed
-void exit_routine(int state) {
+//exit when exit_mode after necessary processing
+void exit_routine(int exit_mode) {
+
+	//************************FIXED SECTION************************
+    // update the solution_report info
+    if (exit_mode == 0) {
+        total_input++;
+        input_fail++;
+    }else{
+        total_rep++;
+        rep_fail++;
+    }
+	//remove log files on log mod
     if (log_mode == 1) {    
         remove(log_file);
         close (log_fd);
     }
+	//write ok_report
+    if (write_ok_report() == 1) remove(ok_file);
+	//*************************************************************
+	//TODO set more routines that need to be complement before exit (if exist)
 
-    // update the variable
-    if (state == 0) {
-        total_input++;
-        input_fail++;
-    } else if (state == 1) {
-        total_rep++;
-        rep_fail++;
-    }
 
-    if (write_ok_report() == 1) {
-        remove(ok_file);
-    }
 
-    exit(state);
+    exit(exit_mode);
+
 }
 
 
-// if input doesn't meet condition call exit_routine, otherwise return 0
-// check if the input meets condition
-int input_ok(char * ch) {
-    if (!isdigit((unsigned char)*ch)) {
-        exit_routine(0);    // Call exit_routine if character is not digit
-    }
+
+// TODO implement the function below
+// check if the input parameter meets assignment's assumtion
+// call it before using every input from stdin
+// usage: if(input_ok(input)) exit_routine(0);
+int input_ok(char * input) {
+	
+	//TODO if input meets assignment's assumtion
+	total_input++;
+	input_pass++;
     return 0;
+
+	//TODO if not
+	return 1;
+
 }
 
-// if the struct isn't correct call exit_routine, otherwise return 0
+
+
+
+
+// TODO implement the function below
 // check if the struct is correct
-// mode: push(0)/pop(1), before_size: before size of execute mode, after_size: after size of execute mode
-int rep_ok(int before_size, int after_size, int rep_mode) {
-    if (rep_mode == 0) {    // push order
-        if ((before_size + 1) != after_size) {
-            exit_routine(1);
-        }
-    }
-    else {      // pop order
-        if (before_size == 0 && after_size == 0) {
-            return 0;
-        }
-        if ((before_size - 1) != after_size) {
-            exit_routine(1);
-        }
-    }
-    
-    return 0;
-}
+// call it after movement might change the state of structure
+// usage: if(rep_ok(/*parameter*/)) exit_routine(1);
+int rep_ok(/*appropriate parameter set */) {
+ 
+	//TODO if the state of structure is fine
+	total_rep++;
+	rep_pass++;
+	return 0;
 
-// record the function flow
-void write_log(char * log_buf) {
-    if (log_mode == 0) {
-        return;
-    }
+	//TODO if not
+    return 1;
 
-    size_t log_len = strlen(log_buf);
-    ssize_t written = 0, written_acc = 0;
 
-    while (written_acc != log_len) {
-        written = write(log_fd, log_buf + written_acc, log_len - written_acc);
-        written_acc += written;
-    }
-}
-
-// print function checks the status after the command is executed
-void print_stack(Node * p) {
-    printf("-------------- PRINT STACK ----------------\n");
-    while (p != nullptr) {
-        printf("%c  ", p->data);
-        p = p->next;
-    }
-   printf("\n-------------- PRINT STACK ----------------\n\n\n");
 }
 
 
+
+
+// TODO implement the function below
+// write the function flow into log_fd
+// call it after every movement that might change the state of structure
+void write_log(/*appropriate parameter set*/) {
+	if (log_mode == 0) return;
+	//TODO write the log into log_fd
+	//log might be called function name, parameters, etc... 
+
+
+
+
+}
+
+
+
+// TODO implement the function below 
+// print state of structure
+// call it after movement might change the state of structure 
+void print_state(/*appropriate parameter set*/) {
+
+	//TODO print state of structure into stdout 
+
+
+}
+
+
+
+
+
+// write ok report into ok_fd
 // return 1 on failure, 0 on success
-// After saving the parameter values to outputs/ok/temp_result, then execute cal.sh
-// This function is called in the following cases:
-// (1) Before exit_failure is executed due to a fail in either input_ok or rep_ok.
-// (2) Before normal termination in main after both input_ok and rep_ok have passed.
 int write_ok_report() {
-    if (solution_report_mode == 0) {
-        return 0;
-    }
-
+    if (solution_report_mode == 0) return 0;
     ostringstream oss;
 
     // Create the formatted string
@@ -124,7 +136,6 @@ int write_ok_report() {
     oss << "input_fail : " << input_fail << "\n";
     oss << "rep_pass : " << rep_pass << "\n";
     oss << "rep_fail : " << rep_fail << "\n";
-
     string report = oss.str();
 
     // Write the string to the file descriptor
@@ -135,14 +146,13 @@ int write_ok_report() {
         written = write(ok_fd, report.c_str() + written_acc, report_len - written_acc);
         if (written == -1) {
             close (ok_fd);
-            return 1; // error writing to file
+            return 1; 
         }
         written_acc += written;
     }
 
     close (ok_fd);
-
-    return 0; // success
+    return 0; 
 }
 
 
@@ -214,12 +224,14 @@ int main(int argc, char * argv[]) {
                 
 
                 // check struct 
-                if ((rep_ok(before_size, stack_size(stack), 0)) != 0) {
-                    exit(EXIT_FAILURE);
-                }
-                // update solution_report info
-                total_rep++;
-                rep_pass++;
+				// update solution_report info
+                if ((rep_ok(before_size, stack_size(stack), 0)) != 0){
+					exit(EXIT_FAILURE);
+				}else{
+                	total_rep++;
+                	rep_pass++;
+				}
+
 
 
                 print_stack(stack);
