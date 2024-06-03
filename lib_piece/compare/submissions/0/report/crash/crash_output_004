@@ -1,3 +1,0 @@
-=================================================================
-==35021==ERROR: AddressSanitizer: heap-use-after-free on address 0x603000001c08 at pc 0x0001038a4e21 bp 0x7ff7bc65d210 sp 0x7ff7bc65d208
-READ of size 8 at 0x603000001c08 thread T0

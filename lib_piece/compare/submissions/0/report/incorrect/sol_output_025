@@ -1,18 +1,13 @@
-0 
-0 21 
-0 2 21 
-0 2 21 
-Not found
-Not found
-0 2 21 
-0 2 21 
+20 
+4 20 
+1 4 20 
+1 4 
+Node with value 1 already exists in the tree.
+1 4 
+1 4 90 
+1 4 90 1245 
+1 2 4 90 1245 
 Node with value 2 already exists in the tree.
-0 2 21 
-Node with value 2 already exists in the tree.
-0 2 21 
-0 2 3 21 
-Node with value 3 already exists in the tree.
-0 2 3 21 
-0 2 3 21 
-Not found
+1 2 4 90 1245 
+1 2 3 4 90 1245 
 Not found

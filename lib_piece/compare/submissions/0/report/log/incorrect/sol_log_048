@@ -1,0 +1,11 @@
+insert 20
+insert 0
+insert 0
+insert 0
+insert 90
+insert 12245
+insert 1
+delete 90
+insert 31
+delete 1
+search 11111111

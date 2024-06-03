@@ -1,4 +1,14 @@
 #include <iostream>
+#include <unistd.h>
+#include <cstdio>
+
+
+void input_ok(int &num)
+{
+    std::cin >> num;
+    std::cin.clear();
+    std::cin.ignore(1000, '\n');
+}
 
 template<typename T>
 class TreeNode {
@@ -140,38 +150,41 @@ int main() {
 #ifndef TEST
 int main()
 {
+    char filename[256];
+    char log_buf[256];
+    sprintf(filename, ".log/log_%d",getpid());
+    FILE * log = fopen(filename,"w");
+    
     BST<int> bst;
-    int a;
+    int menu;
     int num;
 	TreeNode<int> * result;
     int count = 0;
     while(count < 20)
     {
-        std::cin >> a;
-        std::cin.clear();
-        std::cin.ignore(1000, '\n');
-        switch (a)
+        input_ok(menu);
+        switch (menu)
         {
         case 1:
-			std::cin >> num;
-            std::cin.clear();
-            std::cin.ignore(1000, '\n');
+            input_ok(num);
+            sprintf(log_buf,"insert %d\n",num);
+            fputs(log_buf,log);
 			bst.insert(num);
 			bst.inorderTraversal();
             std::cout << "\n";
 			break;
         case 2:
-			std::cin >> num;
-            std::cin.clear();
-            std::cin.ignore(1000, '\n');
-			bst.deleteNode(num);
+            input_ok(num);
+			sprintf(log_buf,"delete %d\n",num);
+            fputs(log_buf,log);
+            bst.deleteNode(num);
 			bst.inorderTraversal();
             std::cout << "\n";
 			break;
         case 3:
-			std::cin >> num;
-            std::cin.clear();
-            std::cin.ignore(1000, '\n');
+			input_ok(num);
+            sprintf(log_buf,"search %d\n",num);
+            fputs(log_buf,log);
             result = bst.search(num);
 			if (result != nullptr) {
 				std::cout << "Found: " << result->data << std::endl;
@@ -180,6 +193,7 @@ int main()
 			}
 			break;
         case 1234:
+            fclose(log);
             return 0;
         default:
           	break;

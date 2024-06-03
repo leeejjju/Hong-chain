@@ -1,13 +1,15 @@
-20 
-20 40 
-Node with value 20 already exists in the tree.
-20 40 
-20 50 
-20 90 
-20 1245 
-20 99 
-2 20 99 
-Node with value 2 already exists in the tree.
-2 20 99 
-2 3 20 99 
-2 3 20 99 
+0 
+0 4 
+0 20 
+0 1 
+0 50 
+Node with value 0 already exists in the tree.
+0 50 
+0 1 
+0 1 
+0 20 
+0 1 
+0 1 
+0 50 
+Node with value 0 already exists in the tree.
+0 50 
