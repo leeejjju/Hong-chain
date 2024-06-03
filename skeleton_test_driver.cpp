@@ -1,14 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sstream>
-#include "db_stack.h"
 using namespace std;
 
 
+//************************FIXED SECTION************************
 int solution_report_mode, log_mode;
 int log_fd;         // for log
 char log_file[128]; // for log
@@ -16,16 +14,17 @@ int ok_fd;          // for solution_report
 char ok_file[128];  // for solution_report
 int total_input = 0, total_rep = 0, input_pass = 0, input_fail = 0, rep_pass = 0, rep_fail = 0;     // for solution report
 
-void exit_routine(int state);
-int input_ok(char * ch);
-int rep_ok(int before_size, int after_size, int rep_mode);
-void print_stack(Node * p);
-void write_log(char * log_buf);
+void exit_routine (int exit_mode);
+int input_ok(char * input);
 int write_ok_report();
+//*************************************************************
+int rep_ok(/*appropriate parameter set */);
+void write_log(/*appropriate parameter set*/);
+void print_state(/*appropriate parameter set*/);
 
 
 //exit when exit_mode after necessary processing
-void exit_routine(int exit_mode) {
+void exit_routine (int exit_mode) {
 
 	//************************FIXED SECTION************************
     // update the solution_report info
@@ -44,6 +43,7 @@ void exit_routine(int exit_mode) {
 	//write ok_report
     if (write_ok_report() == 1) remove(ok_file);
 	//*************************************************************
+
 	//TODO set more routines that need to be complement before exit (if exist)
 
 
@@ -56,22 +56,21 @@ void exit_routine(int exit_mode) {
 
 // TODO implement the function below
 // check if the input parameter meets assignment's assumtion
-// call it before using every input from stdin
+// call it before using input from stdin
 // usage: if(input_ok(input)) exit_routine(0);
 int input_ok(char * input) {
 	
-	//TODO if input meets assignment's assumtion
-	total_input++;
-	input_pass++;
-    return 0;
-
-	//TODO if not
-	return 1;
+	//TODO 
+    if (/*input meets assignment's assumtion*/) {
+	    total_input++;
+	    input_pass++;
+        return 0;
+    }
+    else {
+        return 1;
+    }
 
 }
-
-
-
 
 
 // TODO implement the function below
@@ -80,13 +79,15 @@ int input_ok(char * input) {
 // usage: if(rep_ok(/*parameter*/)) exit_routine(1);
 int rep_ok(/*appropriate parameter set */) {
  
-	//TODO if the state of structure is fine
-	total_rep++;
-	rep_pass++;
-	return 0;
-
-	//TODO if not
-    return 1;
+	//TODO 
+    if (/*the state of structure is fine*/){
+	    total_rep++;
+	    rep_pass++;
+	    return 0;
+    }
+    else {
+        return 1;
+    }
 
 
 }
@@ -99,8 +100,11 @@ int rep_ok(/*appropriate parameter set */) {
 // call it after every movement that might change the state of structure
 void write_log(/*appropriate parameter set*/) {
 	if (log_mode == 0) return;
-	//TODO write the log into log_fd
-	//log might be called function name, parameters, etc... 
+
+	//TODO write the log into log_fd(file descriptor) using file I/O
+    // ** log_fd is already opened. just write the log into log_fd, and do not close log_fd!
+
+	//log might be the function name, parameters, etc... 
 
 
 
@@ -111,7 +115,7 @@ void write_log(/*appropriate parameter set*/) {
 
 // TODO implement the function below 
 // print state of structure
-// call it after movement might change the state of structure 
+// call it after the movement that change the state of structure 
 void print_state(/*appropriate parameter set*/) {
 
 	//TODO print state of structure into stdout 
@@ -122,9 +126,7 @@ void print_state(/*appropriate parameter set*/) {
 
 
 
-
-// write ok report into ok_fd
-// return 1 on failure, 0 on success
+//************************FIXED SECTION************************
 int write_ok_report() {
     if (solution_report_mode == 0) return 0;
     ostringstream oss;
@@ -154,28 +156,15 @@ int write_ok_report() {
     close (ok_fd);
     return 0; 
 }
+//*************************************************************
 
 
 int main(int argc, char * argv[]) {
 
-    // Save the Mode received as an argv[]
-    // argv[1] : solution_report mode, argv[2] : log mode
-    // 0 : turn off, 1: turn on
+    //************************FIXED SECTION************************
     solution_report_mode = atoi(argv[1]);
     log_mode = atoi(argv[2]);
 
-    Node * stack = nullptr;
-
-    char buf[32];
-    scanf("%31s", buf);
-    buf[31] = '\0';
-
-    // printf("len: %ld\n", strlen(buf));
-
-    int before_size;    // for rep_ok
-    char log_buf[512];  // for log
-    
-    /* for log */   
     if (log_mode == 1) {    
         pid_t pid = getpid();
         sprintf(log_file, "./.log/log_%d", pid);
@@ -184,10 +173,7 @@ int main(int argc, char * argv[]) {
             exit(EXIT_FAILURE);
         }
     }
-    /* for log */
 
-
-    /* for saving input_ok, rep_ok return value */
     if (solution_report_mode == 1) {
         pid_t pid2 = getpid();
         sprintf(ok_file, "outputs/ok/temp/ok_%d", pid2);
@@ -196,85 +182,21 @@ int main(int argc, char * argv[]) {
             exit(EXIT_FAILURE);
         }
     }
-    /* for saving input_ok, rep_ok return value */
+    //*************************************************************
 
-    for (char * ch = buf; *ch != 0x0; ch++) {
-        switch (*ch) {
-            case 'a':
-                // printf("ch: %c\n", *ch);
-                if (*(ch+1) != 0x0) {
-                    ch++;
-                }
-
-                // check input is correct
-                if (input_ok(ch) != 0) {
-                    exit(EXIT_FAILURE);
-                }
-                // update solution_report info
-                total_input++;
-                input_pass++;
-
-
-                before_size = stack_size(stack);
-                stack = stack_push(stack, *ch);
-
-                // record log
-                sprintf(log_buf, "stack Pushed\n");
-                write_log(log_buf);
-                
-
-                // check struct 
-				// update solution_report info
-                if ((rep_ok(before_size, stack_size(stack), 0)) != 0){
-					exit(EXIT_FAILURE);
-				}else{
-                	total_rep++;
-                	rep_pass++;
-				}
+    // TODO implement your test driver
+    // using Menu-Driven form (recommended)
 
 
 
-                print_stack(stack);
-                break;
 
-            case 'b':
-                before_size = stack_size(stack);
-                stack = stack_pop(stack);
-
-                // record log
-                sprintf(log_buf, "Popping from stack\n");
-                write_log(log_buf);
-
-
-                // check struct 
-                if ((rep_ok(before_size, stack_size(stack), 1)) != 0) {
-                    exit(EXIT_FAILURE);
-                }
-                // update solution_report info
-                total_rep++;
-                rep_pass++;
-                
-
-                print_stack(stack);
-                break;
-
-            default:
-                break;
-        }
-    }   
-
-    if (!stack_empty(stack)) {
-        printf("top node data: %c\n", stack_top(stack)->data);
-    }
-
-    stack_clear(stack);
-
-
-    // write ok_result
+    //************************FIXED SECTION************************
     if (write_ok_report() == 1) {
         remove(ok_file); 
     }
     if (log_mode == 1) {  
         close (log_fd);
     }
+    //*************************************************************
+
 }

@@ -96,9 +96,6 @@ clean:
 	rm -rf outputs/default
 	rm -rf outputs/ok/temp
 	rm -rf outputs/ok/acc_result
-#	rm -rf submissions
-#	rm -f solution.cpp
-#	rm -f test_driver.cpp
 	rm -f *.out
 
 
