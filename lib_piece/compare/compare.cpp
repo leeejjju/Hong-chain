@@ -18,7 +18,10 @@
 using namespace std;
 
 #define BUF_SIZE 1024
+#define ERROR_NUM 9
 
+char keywords[ERROR_NUM][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV"};
+// https://github.com/google/sanitizers/wiki/AddressSanitizer
 
 void timeout_handler(int signum) 
 {
@@ -87,7 +90,7 @@ int recv_file(int sock, int s_id) {
 }
 
 //return 1 on failure, 0 on success. plz pass the opend file descriptor. 
-int save_crash(int student_id, char* input_filepath, FILE* output_fp, int sub_pid, int crash_cnt){
+int save_crash(int student_id, char* input_filepath, FILE* crash_fp, int sub_pid, int crash_cnt){
 
     char filename[128];
     ssize_t len, read_len, written_len;
@@ -98,20 +101,17 @@ int save_crash(int student_id, char* input_filepath, FILE* output_fp, int sub_pi
     len = sprintf(filename, "crash_log_%03d", crash_cnt);
     filename[len] = 0;
     sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/crash/%s", sub_pid, student_id, filename);
-    if (system(cmd)) 
-    {
-    // return 1; //on failure return 1
-
+    if (system(cmd)) {
+        // return 1; //on failure return 1
     }
 
     len = sprintf(filename, "crash_input_%03d", crash_cnt);
     filename[len] = 0;
     sprintf(cmd, "cp %s submissions/%d/report/crash/%s", input_filepath, student_id, filename);
-    cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
+    // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
     if (system(cmd))
     {
-    // return 1; //on failure return 1
-
+        return 1; //on failure return 1
     }
 
 
@@ -123,16 +123,15 @@ int save_crash(int student_id, char* input_filepath, FILE* output_fp, int sub_pi
     len = sprintf(filename, "crash_output_%03d", crash_cnt);
     filename[len] = 0;
     sprintf(filepath, "submissions/%d/report/crash/%s", student_id, filename);
-    cout << "filename: " << filename << endl << "path: " << filepath << endl;
+    // cout << "filename: " << filename << endl << "path: " << filepath << endl;
 
-    if ((fp = fopen(filepath, "w")) == NULL) return 1; //on failure return 1
-    while (fgets(buffer, sizeof(buffer), output_fp) !=NULL) {
+    if ((fp = fopen(filepath, "w")) == NULL) 
+        return 1; //on failure return 1
+    while (fgets(buffer, sizeof(buffer), crash_fp) !=NULL) {
         fwrite(buffer,1,strlen(buffer), fp);
-    }fclose(fp);
-
-    crash_cnt++;
+    }
+    fclose(fp);
     return 0;
-
 }
 
 //return 1 on failure, 0 on success. plz pass the opend file descriptor.
@@ -150,8 +149,7 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
     if (system(cmd)) 
     {
-    // return 1; //on failure return 1
-
+        // return 1; //on failure return 1
     }
 
     len = sprintf(filename, "sub_log_%03d", incorrect_cnt);
@@ -160,15 +158,15 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
     if (system(cmd)) 
     {
-    // return 1; //on failure return 1
-
+        // return 1; //on failure return 1
     }
 
     len = sprintf(filename, "input_%03d", incorrect_cnt);
     filename[len] = 0;
     sprintf(cmd, "cp %s submissions/%d/report/incorrect/%s", input_filepath, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
-    if (system(cmd)) return 1; //on failure return 1
+    if (system(cmd)) 
+        return 1; //on failure return 1
 
     //save outputs by fileIO
     char filepath[1024];
@@ -202,38 +200,56 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
 
 }
 
-//return 1 if they are same, return 0 if not the same. pass the &index to save index of submission crash.
-int are_they_same(int sol_fd, int sub_fd, int* index){
-
-    // https://github.com/google/sanitizers/wiki/AddressSanitizer
-    char keywords[8][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks" };
-    int sol_idx = -1, sub_idx = -1;
-    char buffer[512]; //TODO if sanitizer is only one in stderr, the keyword surely in first 512 texts. but are there other cases? 
-    int len;
-
-    len = read(sol_fd, buffer, sizeof(buffer)); 
-    buffer[len] = 0; 
-    for(int i = 0; i < 8; i++){
-        if(strstr(buffer, keywords[i]) != nullptr){
-            sol_idx = i;
-            break;
+int check_error_type(FILE * fp)
+{
+    char buffer[512];
+    while (fgets(buffer, sizeof(buffer), fp) !=NULL) {
+        for(int i = 0; i < ERROR_NUM; i++){
+            if(strstr(buffer, keywords[i]) != nullptr){
+                return i;
+            }
         }
     }
-
-    len = read(sub_fd, buffer, sizeof(buffer)); 
-    buffer[len] = 0; 
-    for(int i = 0; i < 8; i++){
-        if(strstr(buffer, keywords[i]) != nullptr){
-            sub_idx = i;
-            break;
-        }
-    }
-
-    *index = sub_idx;
-    if(sol_idx != -1 && sol_idx == sub_idx) return 1; //if same
-    else return 0; // if not
-
+    return -1;
 }
+//return 1 if they are same, return 0 if not the same. pass the &index to save index of submission crash.
+// int are_they_same(FILE * sol_fp, FILE * sub_fp, int* index){
+
+//     // char keywords[9][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV"};
+
+//     int sol_idx = -1, sub_idx = -1;
+//     char buffer[512]; //TODO if sanitizer is only one in stderr, the keyword surely in first 512 texts. but are there other cases? 
+//     int len;
+//     while (fgets(buffer, sizeof(buffer), sol_fp) !=NULL) {
+//         for(int i = 0; i < ERROR_NUM; i++){
+//             if(strstr(buffer, keywords[i]) != nullptr){
+//                 sol_idx = i;
+//                 break;
+//             }
+//         }
+//         if(sol_idx != -1){
+//             break;
+//         }
+//     }
+
+//     while (fgets(buffer, sizeof(buffer), sub_fp) !=NULL) {
+//         for(int i = 0; i < ERROR_NUM; i++){
+//             if(strstr(buffer, keywords[i]) != nullptr){
+//                 sol_idx = i;
+//                 break;
+//             }
+//         }
+//         if(sol_idx != -1){
+//             break;
+//         }
+//     }
+
+
+//     *index = sub_idx;
+//     if(sol_idx != -1 && sol_idx == sub_idx) return 1; //if same
+//     else return 0; // if not
+
+// }
 
 //return 1 somthing error
 int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path,int * total_cnt, int * crash_cnt, int * incorrect_cnt, int student_id){
@@ -360,57 +376,39 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
             rewind(sol_stderr);
 
             if (WIFEXITED(sub_status)) {
-            // 자식 프로세스가 정상 종료되었는지 확인
-                // printf("sub exited with status %d\n", WEXITSTATUS(sub_status));
-                // printf("%s\n",input_file_path);
-                // printf("signaled %d\n",WIFSIGNALED(sub_status));
-                
-            } 
-            if (WIFSIGNALED(sub_status)) {
-                // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
-                if(WIFEXITED(sol_status) || WIFSIGNALED(sol_status) )
+                char sub_buff[256];
+                char sol_buff[256];
+
+                // compare sol_output and sub_output
+                while(fgets(sub_buff, sizeof(sub_buff), sub_stdout) !=NULL)
                 {
-                    //Todo checking timeout using SIGTERM
+                    fgets(sol_buff,sizeof(sol_buff), sol_stdout);
+                    if(strcmp(sol_buff,sub_buff)!=0)
+                    {
+                        rewind(sol_stdout);
+                        rewind(sub_stdout);
+                        // printf("save incorrect\n");
+                        save_incorrect(student_id, input_file_path, sol_stdout,sub_stdout,sol_pid,sub_pid, *incorrect_cnt); 
+                        (*incorrect_cnt)++;
+                        break;
+                    }
+                }
+            } 
+            else if (WIFSIGNALED(sub_status)) {
+                // 자식 프로세스가 시그널로 인해 종료되었는지 확인 (크래시)
+                if(WIFSIGNALED(sol_status))
+                {
                     save_crash(student_id, input_file_path, sub_stderr, sub_pid,*crash_cnt); 
                     (*crash_cnt)++;
-                    free(input_file_path) ;                                                     
-                    fclose(sol_stderr);
-                    fclose(sol_stdout);                                                  
-                    fclose(sub_stderr);                                                  
-                    fclose(sub_stdout); 
-                    continue;
+                }
+                else if(WIFEXITED(sol_status))
+                {
+                    int error_type = check_error_type(sub_stderr);
+                    save_crash(student_id, input_file_path, sub_stderr, sub_pid,*crash_cnt); 
+                    (*crash_cnt)++;
                 }
                 
-            }
-            
-
-
-
-            // 출력이 잘 됐는지 확인 
-            char sub_buff[256];
-            char sol_buff[256];
-
-            // while(fgets(sub_buff, sizeof(sub_buff), sub_stdout) !=NULL)
-            // {
-            //     printf("%s\n",sub_buff);
-            // }
-
-            // compare sol_output and sub_output
-            while(fgets(sub_buff, sizeof(sub_buff), sub_stdout) !=NULL)
-            {
-                fgets(sol_buff,sizeof(sol_buff), sol_stdout);
-                if(strcmp(sol_buff,sub_buff)!=0)
-                {
-                    rewind(sol_stdout);
-                    rewind(sub_stdout);
-                    //TODO change incorrect_cnt to student_id
-                    // printf("save incorrect\n");
-                    save_incorrect(student_id, input_file_path, sol_stdout,sub_stdout,sol_pid,sub_pid, *incorrect_cnt); 
-                    (*incorrect_cnt)++;
-                    break;
-                }
-            }
-                                                                              
+            }                                                             
         }                                                                                                                                      
         else {                                                                
         }                                                                     
@@ -425,17 +423,19 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
     closedir(dir);  
     return 0;                                                          
 }                                                                             
-// int main()                                                                    
-// {    
-//     signal(SIGALRM, timeout_handler);
-    
+int main()                                                                    
+{    
+    signal(SIGALRM, timeout_handler);
+    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
+
     int total_cnt=0;
     int crash_cnt=0;
     int incorrect_cnt=0;
     int student_id = 0;
+    int check_crash[ERROR_NUM]= {0};
     // exec_input("./solution_bst.out","./submission_bst1.out","solution_fuzz_output/default/queue");
-    exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
-    // exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
+    // exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
+    exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id);
     printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
 }                                                                             
                               
