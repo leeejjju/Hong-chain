@@ -18,21 +18,17 @@
 using namespace std;
 
 #include "lib_piece/issue/issue.cpp"
-// #include "lib_piece/util/util.cpp"
 #include "report.cpp"
 #include "lib_piece/compare/compare.cpp"
-
 #define BUF_SIZE 1024
 #define NEW_PORT_BASE 5000
-
 // #define DEBUG
 
 void *handle_clnt(void * arg);
-int recv_file(int sock, int s_id);
-
-void register_routine(string repo_owner, string repo_name);
-void submission_routine(int s_id, string repo_owner, string repo_name);
-void finish_routine(string repo_owner, string repo_name);
+int register_routine(string repo_owner, string repo_name);
+int submission_routine(int s_id, string repo_owner, string repo_name);
+int finish_routine(string repo_owner, string repo_name);
+int seed_cnt;
 
 int main(int argc, char *argv[]) {
 
@@ -40,14 +36,13 @@ int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		printf("Usage : %s <port>\n", argv[0]);
 		exit(1);
-	}
+	}else printf("Start with port %d", argv[0]);
 
 	//setting for socket programming
 	struct sockaddr_in serv_adr, clnt_adr;
 	int clnt_adr_sz;
 	int serv_sock, clnt_sock;
 	pthread_t t_id;
- 
 	serv_sock = socket(PF_INET, SOCK_STREAM, 0);
 	memset(&serv_adr, 0, sizeof(serv_adr));
 	serv_adr.sin_family = AF_INET; 
@@ -73,12 +68,11 @@ int main(int argc, char *argv[]) {
 		printf("Connected client IP: %s [%d]\n", inet_ntoa(clnt_adr.sin_addr), atoi(argv[1]));
     	#endif
 	}
+
 	close(serv_sock);
 	return 0;
+
 }
-
-
-
 
 
 //handle one student connection from github action.
@@ -87,11 +81,7 @@ void *handle_clnt(void * arg) {
 	int clnt_sock = *((int*)arg);
 	int len;
 
-	//get student_id first
-	int s_id;
-	if((len = read(clnt_sock, &s_id, sizeof(int))) <= 0) perror("read");
-	else printf("sock: %d | student id: %d\n", clnt_sock, s_id);
-
+	//get repository information
 	int repo_len;
 	char buffer[BUF_SIZE];
 	if((len = read(clnt_sock, &repo_len, sizeof(int))) <= 0) perror("read");
@@ -100,30 +90,41 @@ void *handle_clnt(void * arg) {
 	char* tmp = buffer;
 	string repo_name = basename(buffer);
 	string repo_owner = dirname(tmp);
+
+	//get student_id 
+	int s_id;
+	if((len = read(clnt_sock, &s_id, sizeof(int))) <= 0) perror("read");
+	else printf("sock: %d | student id: %d\n", clnt_sock, s_id);
 	cout << "sock: " << clnt_sock << " | repo: " << repo_owner << "'s " << repo_name << endl;
 
 	switch(s_id){
-
 	case 0:
 		printf("REGISTER\n");
+		//make subdirectory for seeds
+		system("mkdir -p seeds);
 
 		//recv test_driver.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
+		//recv main_driver.cpp
+		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 		//recv solution.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
+		//recv seeds
+		if((len = read(clnt_sock, &seed_cnt, sizeof(int))) <= 0) perror("read");
+		for(int i = 0; i < seed_cnt; i++){
+			if(recv_file(clnt_sock, s_id)) perror("recv_file");
+		}
 
 		register_routine(repo_owner, repo_name);
-		close(clnt_sock);
-		return NULL;
+		break;
 
 	case -1:
 		printf("FINISH\n");
+
 		finish_routine(repo_owner, repo_name);
-		close(clnt_sock);
-		return NULL;
+		break;
 
 	default:
-
 		printf("SUBMISSION: %d\n", s_id);
 		//make subdirectory under submissions/
 		char cmd[1024];
@@ -134,100 +135,90 @@ void *handle_clnt(void * arg) {
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 
 		submission_routine(s_id, repo_owner, repo_name);
+		break;
+
 	}	
-		
-		
 
 	close(clnt_sock);
 	return NULL;
 
+}
+
+int register_routine(string repo_owner, string repo_name){
+
+
+	//build 
+	//TODO 
+
+	//fuzzing
+
+	//write report
+	string title = "REGISTER report";
+	string report = register_issue();
+
+	//make issue
+	string github_token;
+	cout << "token: ";
+	cin >> github_token;
+	create_github_issue(title, report, repo_owner, repo_name, github_token);
+
+	return 0;
 
 }
 
-void register_routine(string repo_owner, string repo_name){
+int submission_routine(int s_id, string repo_owner, string repo_name){
+	ssize_t len;
+	char cmd[1024];
+
+	//build
+	sprintf(cmd, "make submission SID=%d",s_id );
+	if (system(cmd)) {
+		perror("system");
+		return 1; //on failure return 1
+	}
+
+	//fuzz
+	sprintf(cmd, "make fz_submission SID=%d",s_id );
+	if (system(cmd)){
+		perror("system");
+		return 1; //on failure return 1
+	}
+
+	//compare and grading
+	int total_cnt, incorrect_cnt, crash_cnt;
+	sprintf(cmd, "submissions/%d/submission.out",s_id );
+	exec_input("./solution.out",cmd,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id);
 
 
-		//make issue
-		string github_token;
-		cout << "token: ";
-		cin >> github_token;
+	//write report
+	string title = "SUBMIT report";
+	string report = create_report(s_id, total_cnt, crash_cnt, incorrect_cnt);
 
+	//make issue
+	string github_token;
+	cout << "token: ";
+	cin >> github_token;
+	create_github_issue(title, report, repo_owner, repo_name, github_token);
 
-		string title = "REGISTER report";
-		string report;
-
-		report = register_issue();
-
-		
-		create_github_issue(title, report, repo_owner, repo_name, github_token);
-
-
+	return 0;
 }
 
-void finish_routine(string repo_owner, string repo_name){
-		//arrange the reports of submissions
+int finish_routine(string repo_owner, string repo_name){
 
+	//arrange the reports of submissions
+	//TODO
 
-		//write report
+	//write report
+	string title = "FINISH report";
+	string report = finish();
 
-
-		//make issue
-		string github_token;
-		cout << "token: ";
-		cin >> github_token;
-
-
-		string title = "FINISH report";
-		string report = finish();
-
-
-
-		create_github_issue(title, report, repo_owner, repo_name, github_token);
-
-
-
-}
-
-void submission_routine(int s_id, string repo_owner, string repo_name){
-		ssize_t len;
-    	char cmd[1024];
-		//build
-		// make submission SID=22000711
-    	sprintf(cmd, "make submission SID=%d",s_id );
-    	if (system(cmd)) 
-		{
-			//TODO SEND ISSUE WITH BUILD ERROR MESSAGE
-			return; //on failure return 1
-		}
-		//fuzz
-		// make fz_submission SID=22000711
-		sprintf(cmd, "make fz_submission SID=%d",s_id );
-    	if (system(cmd)) return; //on failure return 1
-
-		//compare and grading
-		int total_cnt, incorrect_cnt, crash_cnt;
-		sprintf(cmd, "submissions/%d/submission.out",s_id );
-		exec_input("./solution.out",cmd,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id);
-
-
-		//make issue
-		string github_token;
-		cout << "token: ";
-		cin >> github_token;
-
-
-		string title = "SUBMIT report";
-		string report;
-
-		//write report
-		report = create_report(s_id, total_cnt, crash_cnt, incorrect_cnt);
-
-
-		create_github_issue(title, report, repo_owner, repo_name, github_token);
-
-
-
-
+	//make issue
+	string github_token;
+	cout << "token: ";
+	cin >> github_token;
+	create_github_issue(title, report, repo_owner, repo_name, github_token);
+	
+	return 0;
 
 }
 
