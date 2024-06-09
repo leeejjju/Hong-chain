@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 	if (argc != 2) {
 		printf("Usage : %s <port>\n", argv[0]);
 		exit(1);
-	}else printf("Start with port %d", argv[0]);
+	}else printf("Start with port %s", argv[0]);
 
 	//setting for socket programming
 	struct sockaddr_in serv_adr, clnt_adr;
@@ -101,7 +101,7 @@ void *handle_clnt(void * arg) {
 	case 0:
 		printf("REGISTER\n");
 		//make subdirectory for seeds
-		system("mkdir -p seeds);
+		system("mkdir -p seeds");
 
 		//recv test_driver.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
