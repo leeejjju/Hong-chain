@@ -34,6 +34,7 @@ int main() {
 
     if(inputString.compare("roop") == 0)
     {
+        fprintf(stderr,"hi\n");
         while(1);
     }
     

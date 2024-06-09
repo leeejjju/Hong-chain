@@ -101,10 +101,19 @@ private:
             inorderRecursive(root->right);
         }
     }
+    void deleteTree(TreeNode<T>* root) {
+        if (root != nullptr) {
+            deleteTree(root->left);
+            deleteTree(root->right);
+            delete root;
+        }
+    }
 
 public:
     BST() : root(nullptr) {}
-
+    ~BST() {
+        deleteTree(root);
+    }
     void insert(T data) {
         root = insertRecursive(root, data);
     }
@@ -154,6 +163,11 @@ int main()
     char log_buf[256];
     sprintf(filename, ".log/log_%d",getpid());
     FILE * log = fopen(filename,"w");
+    if(log == NULL)
+    {
+        printf("can't open file");
+        return 1;
+    }
     
     BST<int> bst;
     int menu;
