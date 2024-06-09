@@ -1,0 +1,11 @@
+insert 1245
+insert 2
+delete 1
+delete 0
+insert 1
+insert 20
+insert 40
+delete 1
+insert 2
+insert 3
+insert 3

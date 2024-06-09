@@ -1,0 +1,19 @@
+0 
+0 20 
+0 20 90 
+0 2 20 90 
+0 1 2 20 90 
+Node with value 1 already exists in the tree.
+0 1 2 20 90 
+Node with value 90 already exists in the tree.
+0 1 2 20 90 
+Node with value 1 already exists in the tree.
+0 1 2 20 90 
+Found: 1
+Found: 2
+Node with value 2 already exists in the tree.
+0 1 2 20 90 
+Node with value 2 already exists in the tree.
+0 1 2 20 90 
+Found: 1
+Not found

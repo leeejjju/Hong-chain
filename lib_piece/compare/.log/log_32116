@@ -1,0 +1,14 @@
+insert 0
+insert 1
+delete 90
+search 1
+search 10
+insert 2
+delete 2
+insert 2
+insert 0
+insert 55
+insert 2
+delete 91
+delete 0
+insert 2

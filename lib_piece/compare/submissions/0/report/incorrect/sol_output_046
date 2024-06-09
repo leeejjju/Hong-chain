@@ -1,0 +1,18 @@
+1 
+Node with value 1 already exists in the tree.
+1 
+0 1 
+0 1 
+0 1 40 
+0 1 20 40 
+Node with value 1 already exists in the tree.
+0 1 20 40 
+0 1 5 20 40 
+0 5 20 40 
+0 5 20 40 2245 
+0 2 5 20 40 2245 
+0 2 3 5 20 40 2245 
+Found: 3
+Found: 3
+Found: 3
+Found: 3
