@@ -18,7 +18,7 @@
 
 using namespace std;
 
-char keywords[9][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks", "infinite loop"};
+char keywords[9][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks", "SEGV"};
 
 
 // return 1 on failure, 0 on success
