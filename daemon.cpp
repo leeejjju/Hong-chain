@@ -18,7 +18,6 @@
 using namespace std;
 
 #include "lib_piece/issue/issue.cpp"
-// #include "lib_piece/util/util.cpp"
 #include "report.cpp"
 #include "lib_piece/compare/compare.cpp"
 
