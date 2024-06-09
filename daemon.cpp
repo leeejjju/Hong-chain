@@ -22,15 +22,23 @@ using namespace std;
 #include "lib_piece/compare/compare.cpp"
 #define BUF_SIZE 1024
 #define NEW_PORT_BASE 5000
+#define ERROR_NUM 10 
+#define INFINITIROOP 9 
 // #define DEBUG
 
 void *handle_clnt(void * arg);
 int register_routine(string repo_owner, string repo_name);
 int submission_routine(int s_id, string repo_owner, string repo_name);
 int finish_routine(string repo_owner, string repo_name);
+
+char keywords[ERROR_NUM][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV","INFINITIROOP"}; //from https://github.com/google/sanitizers/wiki/AddressSanitizer
 int seed_cnt;
 
 int main(int argc, char *argv[]) {
+
+	//signal setting
+    signal(SIGALRM, timeout_handler);
+    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 
 	//check args first
 	if (argc != 2) {
@@ -77,6 +85,7 @@ int main(int argc, char *argv[]) {
 
 //handle one student connection from github action.
 void *handle_clnt(void * arg) {
+
 
 	int clnt_sock = *((int*)arg);
 	int len;
@@ -169,7 +178,14 @@ int register_routine(string repo_owner, string repo_name){
 int submission_routine(int s_id, string repo_owner, string repo_name){
 	ssize_t len;
 	char cmd[1024];
+	char submission_exec_path[1024];
+	char submission_corpus_path[1024];
+    int total_cnt = 0;
+    int crash_cnt = 0;
+    int incorrect_cnt = 0;
+    int check_crash[ERROR_NUM] = {0};
 
+    
 	//build
 	sprintf(cmd, "make submission SID=%d",s_id );
 	if (system(cmd)) {
@@ -185,9 +201,12 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 	}
 
 	//compare and grading
-	int total_cnt, incorrect_cnt, crash_cnt;
-	sprintf(cmd, "submissions/%d/submission.out",s_id );
-	exec_input("./solution.out",cmd,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id);
+	sprintf(submission_exec_path, "submissions/%d/submission.out",s_id );
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/queue",s_id );
+	exec_input("./solution.out", submission_exec_path,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+	//TODO crash..
+
 
 
 	//write report

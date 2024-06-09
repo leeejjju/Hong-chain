@@ -15,11 +15,10 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
-
 using namespace std;
+#define ERROR_NUM 10
 
-extern char keywords[9][32];
-
+extern char keywords[ERROR_NUM][32];
 
 // return 1 on failure, 0 on success
 int file_content_to_report(const char * filename, string& report_str) {

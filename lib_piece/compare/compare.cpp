@@ -13,16 +13,11 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <iostream>
-
 using namespace std;
-
 #define BUF_SIZE 1024
-
-//need to modify error type
 #define ERROR_NUM 10 
 #define INFINITIROOP 9 
-char keywords[ERROR_NUM][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV","INFINITIROOP"};
-// https://github.com/google/sanitizers/wiki/AddressSanitizer
+
 
 void timeout_handler(int signum) 
 {
@@ -437,22 +432,8 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
                                                                               
     closedir(dir);  
     return 0;                                                          
+
+
 }
 
-/*
-int main()                                                                    
-{    
-    signal(SIGALRM, timeout_handler);
-    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 
-    int total_cnt=0;
-    int crash_cnt=0;
-    int incorrect_cnt=0;
-    int student_id = 0;
-    int check_crash[ERROR_NUM]= {0};
-    // exec_input("./solution_bst.out","./submission_bst1.out","solution_fuzz_output/default/queue",  &total_cnt, &crash_cnt, &incorrect_cnt, student_id, check_crash);
-    exec_input("./solution_bst.out","./submission_bst3.out","solution_fuzz_output/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, student_id, check_crash);
-    // exec_input("./testcopy.out","./test.out","Testinput", &total_cnt, &crash_cnt, &incorrect_cnt, student_id, check_crash);
-    printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
-}                                                                             
-*/
