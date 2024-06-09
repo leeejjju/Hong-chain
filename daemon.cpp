@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
 	//signal setting
     signal(SIGALRM, timeout_handler);
-    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
+    //setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 
 	//check args first
 	if (argc != 2) {
@@ -202,10 +202,16 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 
 	//compare and grading
 	sprintf(submission_exec_path, "submissions/%d/submission.out",s_id );
-	sprintf(submission_corpus_path, "submissions/%d/outputs/default/queue",s_id );
+	//solution queue
 	exec_input("./solution.out", submission_exec_path,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+	//submission queue
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/queue",s_id );
 	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
-	//TODO crash..
+
+	//submission crash
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/crash",s_id );
+	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
 
 
 

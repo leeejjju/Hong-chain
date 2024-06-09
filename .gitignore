@@ -1,5 +1,9 @@
 #fuzzing outputs
 Lev1/outputs/
+old/
+submissions/
+.log/
+outputs/
 
 #vim
 .swp

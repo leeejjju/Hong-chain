@@ -44,6 +44,7 @@ endif
 # make submission execution file, LIB_NAME is optional but SID is essential
 # how to use : make submission SID=22000711 LIB_NAME=libnowic_db.a 
 submission:
+	export ASAN_OPTIONS=abort_on_error=1:symbolize=0
 	mkdir -p .log
 ifeq ($(LIB_NAME),) # LIB_NAME is empty
 	AFL_USE_ASAN=1 $(CC1) -std=c++11 test_driver.cpp  submissions/$(SID)/submission.cpp -I./include -o submissions/$(SID)/submission.out
