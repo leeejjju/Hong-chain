@@ -85,10 +85,10 @@ fz_submission:
 
 
 
-demon.out: demon.cpp
+daemon.out: daemon.cpp
 	$(CC2) $^ -o $@ $(CFLAGS) 
 
-rs: demon.out
+rs: daemon.out
 	./$^ $(PORT)
 
 
