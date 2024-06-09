@@ -18,7 +18,7 @@
 
 using namespace std;
 
-extern char keywords[9][32];
+extern char keywords[10][32];
 
 
 // return 1 on failure, 0 on success
