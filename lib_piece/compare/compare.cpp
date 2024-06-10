@@ -95,7 +95,7 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
     //save input by execute cmd
     char cmd[1024];
 
-    len = sprintf(filename, "sol_log_%03d", incorrect_cnt);
+    len = sprintf(filename, "sol_log_%d", incorrect_cnt);
     filename[len] = 0;
     sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/incorrect/%s", sol_pid, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
@@ -104,7 +104,7 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
         // return 1; //on failure return 1
     }
 
-    len = sprintf(filename, "sub_log_%03d", incorrect_cnt);
+    len = sprintf(filename, "sub_log_%d", incorrect_cnt);
     filename[len] = 0;
     sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/incorrect/%s", sub_pid, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
@@ -113,7 +113,7 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
         // return 1; //on failure return 1
     }
 
-    len = sprintf(filename, "input_%03d", incorrect_cnt);
+    len = sprintf(filename, "input_%d", incorrect_cnt);
     filename[len] = 0;
     sprintf(cmd, "cp %s submissions/%d/report/incorrect/%s", input_filepath, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
@@ -125,7 +125,7 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
     char buffer[1024];
     FILE * fp = NULL;
 
-    len = sprintf(filename, "sol_output_%03d", incorrect_cnt);
+    len = sprintf(filename, "sol_output_%d", incorrect_cnt);
     filename[len] = 0;
     len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
     filepath[len] = 0;
@@ -136,7 +136,7 @@ int save_incorrect(int student_id, char*input_filepath, FILE* sol_fp, FILE* sub_
         fwrite(buffer,1,strlen(buffer), fp);
     }fclose(fp);
 
-    len = sprintf(filename, "sub_output_%03d", incorrect_cnt);
+    len = sprintf(filename, "sub_output_%d", incorrect_cnt);
     filename[len] = 0;
     len = sprintf(filepath, "submissions/%d/report/incorrect/%s", student_id, filename);
     filepath[len] = 0;
@@ -175,14 +175,14 @@ int save_crash(int student_id, char* input_filepath, FILE* crash_fp, int sub_pid
     //save input by execute cmd
     char cmd[1024];
 
-    len = sprintf(filename, "crash_log_%03d", error_type);
+    len = sprintf(filename, "crash_log_%d", error_type);
     filename[len] = 0;
     sprintf(cmd, "mv .log/log_%d submissions/%d/report/log/crash/%s", sub_pid, student_id, filename);
     if (system(cmd)) {
         // return 1; //on failure return 1
     }
 
-    len = sprintf(filename, "crash_input_%03d", crash_cnt);
+    len = sprintf(filename, "crash_input_%d", crash_cnt);
     filename[len] = 0;
     sprintf(cmd, "cp %s submissions/%d/report/crash/%s", input_filepath, student_id, filename);
     // cout << "filename: " << filename << endl << "cmd: " << cmd << endl;
@@ -197,7 +197,7 @@ int save_crash(int student_id, char* input_filepath, FILE* crash_fp, int sub_pid
     char buffer[1024];
     FILE* fp = 0;
 
-    len = sprintf(filename, "crash_output_%03d", crash_cnt);
+    len = sprintf(filename, "crash_output_%d", crash_cnt);
     filename[len] = 0;
     sprintf(filepath, "submissions/%d/report/crash/%s", student_id, filename);
     // cout << "filename: " << filename << endl << "path: " << filepath << endl;
