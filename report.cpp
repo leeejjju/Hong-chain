@@ -20,6 +20,15 @@ using namespace std;
 
 extern char keywords[ERROR_NUM][32];
 
+/*
+//need to modify error type
+#define ERROR_NUM 10 
+#define INFINITIROOP 9 
+char keywords[ERROR_NUM][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV","INFINITIROOP"};
+// https://github.com/google/sanitizers/wiki/AddressSanitizer
+*/
+
+
 // return 1 on failure, 0 on success
 int file_content_to_report(const char * filename, string& report_str) {
     ifstream file(filename);
@@ -208,31 +217,15 @@ string register_issue(string lib_name = "" ) {
     return register_report;
 }
 
+/*
+int main() {
+	cout << create_report(1234, 4, 2, 2);
+	cout << endl<< endl;
+	//cout << finish();
+	cout << endl;
 
-// int main() {
-//     // cout << create_report(22000711, 4, 2, 2);
-//     // cout << endl<< endl;
-//     cout << finish();
-//     // cout << endl;
-
-//     // cout << register_issue();
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  //  cout << register_issue();
+}
+*/
 
 

@@ -1,0 +1,13 @@
+	sprintf(submission_exec_path, "submissions/%d/submission.out",s_id );
+	//solution queue
+	exec_input("./solution.out", submission_exec_path,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+	//submission queue
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/queue",s_id );
+	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+	//submission crash
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/crash",s_id );
+	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+    printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);

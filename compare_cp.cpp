@@ -18,6 +18,9 @@ using namespace std;
 #define ERROR_NUM 10 
 #define INFINITIROOP 9 
 
+//need to modify error type
+char keywords[ERROR_NUM][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV","INFINITIROOP"};
+// https://github.com/google/sanitizers/wiki/AddressSanitizer
 
 void timeout_handler(int signum) 
 {
@@ -441,3 +444,34 @@ int exec_input(char * sol_exec_path, char * sub_exec_path, char * input_dir_path
 }
 
 
+/*
+*/
+int main()                                                                    
+{    
+    signal(SIGALRM, timeout_handler);
+    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
+
+    int total_cnt=0;
+    int crash_cnt=0;
+    int incorrect_cnt=0;
+    int student_id = 0;
+    int check_crash[ERROR_NUM]= {0};
+	char submission_exec_path[1024];
+	char submission_corpus_path[1024];
+	int s_id = 1234;
+
+
+	sprintf(submission_exec_path, "submissions/%d/submission.out",s_id );
+	//solution queue
+	exec_input("./solution.out", submission_exec_path,"outputs/default/queue", &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+	//submission queue
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/queue",s_id );
+	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+	//submission crash
+	sprintf(submission_corpus_path, "submissions/%d/outputs/default/crash",s_id );
+	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
+
+    printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
+}                                                                             
