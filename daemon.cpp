@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
 	//signal setting
     signal(SIGALRM, timeout_handler);
-    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
+    // setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 
 	//check args first
 	if (argc != 2) {
@@ -143,7 +143,11 @@ void *handle_clnt(void * arg) {
 		//recv submission.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 
+		/* TODO: HAVE TO MAKE CRITICAL SECTION */
+		setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 		submission_routine(s_id, repo_owner, repo_name);
+		setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
+		/***************************************/
 		break;
 
 	}	
