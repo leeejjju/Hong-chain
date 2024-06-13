@@ -38,7 +38,6 @@ int main(int argc, char *argv[]) {
 
 	//signal setting
     signal(SIGALRM, timeout_handler);
-    // setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 
 	//check args first
 	if (argc != 2) {
@@ -143,11 +142,7 @@ void *handle_clnt(void * arg) {
 		//recv submission.cpp
 		if(recv_file(clnt_sock, s_id)) perror("recv_file");
 
-		/* TODO: HAVE TO MAKE CRITICAL SECTION */
-		setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 		submission_routine(s_id, repo_owner, repo_name);
-		setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
-		/***************************************/
 		break;
 
 	}	
@@ -188,13 +183,11 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
     int crash_cnt = 0;
     int incorrect_cnt = 0;
     int check_crash[ERROR_NUM] = {0};
-	// setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
     
 	//build
 	sprintf(cmd, "make submission SID=%d",s_id );
 	if (system(cmd)) {
 		perror("system");
-		// setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
 		return 1; //on failure return 1
 	}
 
@@ -202,10 +195,12 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 	sprintf(cmd, "make fz_submission SID=%d",s_id );
 	if (system(cmd)){
 		perror("system");
-		// setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
 		return 1; //on failure return 1
 	}
 
+
+	/* TODO : CRITICAL SECTION */
+	setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 	
 	sprintf(submission_exec_path, "submissions/%d/submission.out",s_id );
 	//solution queue
@@ -220,6 +215,8 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 	exec_input("./solution.out", submission_exec_path, submission_corpus_path, &total_cnt, &crash_cnt, &incorrect_cnt, s_id, check_crash);
 
     printf("totall: %d crash: %d incorrect: %d\n",total_cnt,crash_cnt,incorrect_cnt);
+	setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
+	/***************************/
 
 	//write report
 	string title = "SUBMIT report";
@@ -231,7 +228,6 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 	cin >> github_token;
 	create_github_issue(title, report, repo_owner, repo_name, github_token);
 
-	// setenv("ASAN_OPTIONS", "abort_on_error=0", 1);	
 	return 0;
 }
 
