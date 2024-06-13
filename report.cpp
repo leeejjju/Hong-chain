@@ -18,15 +18,7 @@
 using namespace std;
 #define ERROR_NUM 10
 
-extern char keywords[ERROR_NUM][32];
-
-/*
-//need to modify error type
-#define ERROR_NUM 10 
-#define INFINITIROOP 9 
-char keywords[ERROR_NUM][32] = {"heap-use-after-free", "heap-buffer-overflow", "stack-buffer-overflow", "global-buffer-overflow", "stack-use-after-return", "stack-use-after-scope", "initialization-order-fiasco", "memory leaks","SEGV","INFINITIROOP"};
-// https://github.com/google/sanitizers/wiki/AddressSanitizer
-*/
+extern char keywords[10][32];
 
 
 // return 1 on failure, 0 on success
