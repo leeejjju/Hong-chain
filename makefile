@@ -86,7 +86,7 @@ fz_submission:
 
 
 daemon.out: daemon.cpp
-	$(CC2) $^ -o $@ $(CFLAGS) 
+	$(CC1) $^ -o $@ $(CFLAGS) 
 
 rs: daemon.out
 	./$^ $(PORT)

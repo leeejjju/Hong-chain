@@ -184,13 +184,13 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
     int crash_cnt = 0;
     int incorrect_cnt = 0;
     int check_crash[ERROR_NUM] = {0};
-	setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
+	// setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
     
 	//build
 	sprintf(cmd, "make submission SID=%d",s_id );
 	if (system(cmd)) {
 		perror("system");
-		setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
+		// setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
 		return 1; //on failure return 1
 	}
 
@@ -198,7 +198,7 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 	sprintf(cmd, "make fz_submission SID=%d",s_id );
 	if (system(cmd)){
 		perror("system");
-		setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
+		// setenv("ASAN_OPTIONS", "abort_on_error=0", 1);
 		return 1; //on failure return 1
 	}
 
@@ -227,7 +227,7 @@ int submission_routine(int s_id, string repo_owner, string repo_name){
 	cin >> github_token;
 	create_github_issue(title, report, repo_owner, repo_name, github_token);
 
-	setenv("ASAN_OPTIONS", "abort_on_error=0", 1);	
+	// setenv("ASAN_OPTIONS", "abort_on_error=0", 1);	
 	return 0;
 }
 
