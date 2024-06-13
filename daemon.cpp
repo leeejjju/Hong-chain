@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
 
 	//signal setting
     signal(SIGALRM, timeout_handler);
-    //setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
+    setenv("ASAN_OPTIONS", "abort_on_error=1", 1);
 
 	//check args first
 	if (argc != 2) {
