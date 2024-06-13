@@ -9,6 +9,7 @@ ENV TZ=Asia/Seoul
 RUN apt-get update && apt-get install -y \
     build-essential \
     g++ \
+    clang++ \
     cmake \
     git \
     libssl-dev \
@@ -24,7 +25,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /app
 
 # 소스 코드 및 필요 파일 복사
-COPY . /app
+COPY . .
+
+RUN cd AFLplusplus && make
 
 # 서버 빌드
 RUN make daemon.out
